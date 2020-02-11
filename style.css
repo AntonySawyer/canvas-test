@@ -1,0 +1,16 @@
+body {
+    display: flex;
+}
+
+canvas { 
+    border: 1px solid black; 
+}
+
+#toolbar {
+    position: absolute;
+}
+
+#background {
+    position: absolute;
+    z-index: -1;
+}

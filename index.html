@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test task 1</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <canvas id="toolbar"
+        onmousemove="moveHandler(event);"
+        onmousedown="mouseDownHandler(event);"
+        onmouseup="mouseUpHandler(event);"
+    ></canvas>
+    <canvas id="space"
+        onmousemove="moveHandler(event);"
+        onmousedown="mouseDownHandler(event);"
+        onmouseup="mouseUpHandler(event);"
+        onmouseout="mouseUpHandler(event);"
+    ></canvas>
+    <canvas id="background"></canvas>
+    <script src="./app.js"></script>
+</body>
+</html> 
