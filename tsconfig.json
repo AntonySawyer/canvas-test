@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "sourceMap": true,
+        "lib": [
+            "es5",
+            "es2015",
+            "dom"
+        ],
+        "noUnusedLocals": true,
+        "skipLibCheck": true,
+        "module": "commonjs"
+    }
+}

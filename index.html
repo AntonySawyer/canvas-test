@@ -4,21 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test task 1</title>
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./src/style.css">
 </head>
 <body>
-    <canvas id="toolbar"
-        onmousemove="moveHandler(event);"
-        onmousedown="mouseDownHandler(event);"
-        onmouseup="mouseUpHandler(event);"
-    ></canvas>
-    <canvas id="space"
-        onmousemove="moveHandler(event);"
-        onmousedown="mouseDownHandler(event);"
-        onmouseup="mouseUpHandler(event);"
-        onmouseout="mouseUpHandler(event);"
-    ></canvas>
-    <canvas id="background"></canvas>
-    <script src="./app.js"></script>
+    <section class="sidebarWrapper">
+        <h2>STANDARD UNITS</h2>
+        <h3>Width available</h3>
+        <div class="unitsContainer">
+            <div class="unit">
+                <span class="unitDescr">150mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">200mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">250mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">300mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">350mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">400mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">450mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">500mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">550mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">600mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">650mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">700mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">750mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">800mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">850mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">900mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">950mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+            <div class="unit">
+                <span class="unitDescr">1000mm</span>
+                <span class="unitIcon">☰</span>
+            </div>
+        </div>
+        <select name="" id="" class="fullSize">
+            <option value="">PET BEDS</option>
+            <option value="">SECOND OPTION</option>
+        </select>
+        <h3>Decor Accessories</h3>
+        <select name="" id="" class="fullSize">
+            <option value="">MILANO DECOR END</option>
+            <option value="">SECOND OPTION</option>
+        </select>
+        <select name="" id="" class="fullSize">
+            <option value="">ISLAND FRONTALS</option>
+            <option value="">SECOND OPTION</option>
+        </select>
+        <div class="unit bigUnit fullSize">
+            <span class="unitDescr">DECOR PANEL</span>
+            <span class="unitIcon">☰</span>
+        </div>
+        <div class="unit bigUnit fullSize">
+            <span class="unitDescr">FILLER PANEL</span>
+            <span class="unitIcon">☰</span>
+        </div>
+    </section>
+    <canvas id="sidebar"></canvas>
+    <canvas id="space"></canvas>
+    <script src="./dist/app.js"></script>
 </body>
-</html> 
+</html>
