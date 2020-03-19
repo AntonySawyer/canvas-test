@@ -29,6 +29,7 @@ export interface IAxisPoint {
   commitMovement: (movement: Coordinate) => void;
   getCoordinate: () => Coordinate;
   getPoints: () => Points;
+  getPoints2: () => Coordinate[];
   coordinateIsInside: (coordinate: Coordinate) => boolean;
 }
 

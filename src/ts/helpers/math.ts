@@ -8,11 +8,10 @@ export function somePointInRangeWithLimit(controlPoints: number[], // into axisP
       || someInRange(controlPoints[1] - stickyLimit, controlPoints[1] + stickyLimit, pointsToCheck);
 }
 
-export const someInRange = (first: number, last: number, arrToCheck: number[]) => {
-// numbToCheck?
-  return arrToCheck.some(numbToCheck => first <= numbToCheck && numbToCheck <= last);
+export const someInRange = (firstNumb: number, lastNumb: number, arrToCheck: number[]) => {
+  return arrToCheck.some(numbToCheck => firstNumb <= numbToCheck && numbToCheck <= lastNumb);
 };
 
-export function convertXForStaticLayer(x: number) {
+export function convertXForStaticLayer(x: number) { // place into new helper
   return x - sidebarWidth;
 }

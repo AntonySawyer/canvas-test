@@ -29,20 +29,26 @@ abstract class AxisPoint implements IAxisPoint {
     return { x: this.x, y: this.y };
   }
 
-  getPoints() {
+  getPoints() { // widget
     const first = this.getCoordinate();
     const last = { x: this.x + this.width, y: this.y + this.height };
     return { first, last };
   }
 
-  coordinateIsInside(coordinate: Coordinate) {
+  getPoints2() { // widget
+    const points = this.getPoints();
+    return [ points.first, { x: points.first.x, y: points.last.y }, { x: points.last.x, y: points.first.y}, points.last ]
+
+  }
+
+  coordinateIsInside(coordinate: Coordinate) { // math.ts
     const points = this.getPoints();
     const xInside = someInRange(points.first.x, points.last.x, [coordinate.x]);
     const yInside = someInRange(points.first.y, points.last.y, [coordinate.y]);
     return xInside && yInside;
   }
 
-  protected getXForActiveLayer() {
+  protected getXForActiveLayer() { // place into newhalper
     return this.x + sidebarWidth;
   }
 

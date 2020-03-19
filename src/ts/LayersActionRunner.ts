@@ -9,7 +9,7 @@ import { Static } from './layers/Static';
 import { activeLayer } from './layers/Active';
 import { convertXForStaticLayer } from './helpers/math';
 
-export default class LayersActionRunner implements ILayersActionRunner {
+export default class LayersActionRunner implements ILayersActionRunner { // rename
   constructor() {
     staticCanvas.addEventListener('mousedown',
                                   (e: MouseEvent) => this.handleMouseDown(e, 'canvas'));
@@ -42,7 +42,7 @@ export default class LayersActionRunner implements ILayersActionRunner {
     }
   }
 
-  private actionEnd() { // rename ????
+  private actionEnd() { // rename ???? OR remove
     const isActiveLayerOnTop = false;
     activeLayer.setLayerOnTop(isActiveLayerOnTop);
     if (this.stack.hasActiveWidget() && this.stack.activeWidget.isOutOfBorders()) {
@@ -62,7 +62,7 @@ export default class LayersActionRunner implements ILayersActionRunner {
   private onKeyboardMove(e: KeyboardEvent) {
     const movement: Coordinate = getArrowMovement(e.key as KeyboardKeysForListen);
     if (this.stack.hasActiveWidget() && movement !== undefined) {
-      this.makeNextStep(movement, 'keyboard');
+      this.makeNextStep(movement, 'keyboard'); // mode is needed ?
     }
   }
 
@@ -83,13 +83,13 @@ export default class LayersActionRunner implements ILayersActionRunner {
     const clickCoordinate = { x: e.offsetX, y: e.offsetY };
     for (const widget of this.stack.getStack()) {
       if (widget.coordinateIsInside(clickCoordinate)) {
-        if (!widget.isActive) {
+        if (!widget.isActive) { // =(
           this.stack.setNewActive(widget);
         }
         return;
       }
     }
-    if (this.stack.hasActiveWidget()) {
+    if (this.stack.hasActiveWidget()) { // =(
       this.stack.resetActive();
     }
   }

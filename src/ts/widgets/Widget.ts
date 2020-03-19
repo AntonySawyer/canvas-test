@@ -40,7 +40,7 @@ export default abstract class Widget extends AxisPoint implements IWidget {
   }
 
   private setCorrectColorProperty = () => {
-    this.color = this.isCrossing ? WidgetColor.hightlight
+    this.color = this.isCrossing ? WidgetColor.hightlight // remove !
                 : this.isActive ? WidgetColor.active : this.defaultColor;
     this.draw();
   }
