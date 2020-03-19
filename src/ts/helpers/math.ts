@@ -27,33 +27,36 @@ export function checkBorders(widget: IWidget, top: number, right: number,
       && widget.x + widget.width < right;
 }
 
-export function findNeabors(limit: number, target: IWidget, candidate: IWidget) {
-  let newX: number;
-  let newY: number;
-
-  if (isLessThanLimit(limit, target.x, candidate.x + candidate.width)) {
-    newX = candidate.x + candidate.width + 1;
-  }
-  if (isLessThanLimit(limit, target.x + target.width, candidate.x)) {
-    newX = candidate.x - target.width + limit * 2 - 1;
-  }
-  if (isLessThanLimit(limit, target.y, candidate.y + candidate.height)) {
-    newY = candidate.y + candidate.height + 1;
-  }
-  if (isLessThanLimit(limit, target.y + target.height, candidate.y)) {
-    newY = candidate.y - target.height + limit * 2 - 1;
-  }
-  if (newX === undefined) {
-    newX = target.x;
-  }
-  if (newY === undefined) {
-    newY = target.y;
+export function findNeabors(limit: number, direction: string, target: IWidget, candidate: IWidget) {
+  let newX: number = target.x + limit;
+  let newY: number = target.y + limit;
+  switch (direction) {
+    case 'Up':
+      if (isLessThanLimit(limit, target.y, candidate.y + candidate.height)) {
+        newY = candidate.y + candidate.height + 1;
+      }
+      break;
+    case 'Down':
+      if (isLessThanLimit(limit, target.y + target.height, candidate.y)) {
+        newY = candidate.y - target.height + limit * 2 - 1;
+      }
+      break;
+    case 'Right':
+      if (isLessThanLimit(limit, target.x + target.width, candidate.x)) {
+        newX = candidate.x - target.width + limit * 2 - 1;
+      }
+      break;
+    case 'Left':
+      if (isLessThanLimit(limit, target.x, candidate.x + candidate.width)) {
+        newX = candidate.x + candidate.width + 1;
+      }
+      break;
   }
   return { newX, newY };
 }
 
 const isLessThanLimit = (limit: number, a: number, b: number) => {
-  return a - b > -limit && a - b < limit;
+  return Math.abs(a - b) < limit;
 };
 
 const isCrossing = (firstPair: number[], secondPair: number[]) => {

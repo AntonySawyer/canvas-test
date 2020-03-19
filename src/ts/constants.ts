@@ -11,6 +11,8 @@ export const highlightColor = '#f3906d';
 export const stickyWidgetColor = '#846cd6';
 export const activeWidgetColor = '#44bd0d';
 
+export const stickyLimit = 50;
+
 export const widgetSamples: ReadonlyArray<IWidget> = [
   { id: 15, width: 15, height: 75 },
   { id: 20, width: 20, height: 45 },

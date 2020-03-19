@@ -2,8 +2,8 @@ import { activeLayer } from './layers/Active';
 import { widgetLayer } from './layers/Widget';
 import widgetFactory from './widgetFactory';
 
-import { isClickInsideWidget, checkCrossing, findNeabors } from './helpers/math';
-import { sidebarWidth, activeWidgetColor, stickyWidgetColor, defaultWidgetColor, highlightColor } from './constants';
+import { isClickInsideWidget, checkCrossing, calculateMiddle } from './helpers/math';
+import { sidebarWidth, activeWidgetColor, stickyWidgetColor, defaultWidgetColor, highlightColor, stickyLimit } from './constants';
 import { IWidget } from './interfaces';
 
 export default class LayersManager {
@@ -21,70 +21,106 @@ export default class LayersManager {
   private crossingIds: number[] = [];
 
   private onMouseMove(e: MouseEvent) {
-    activeLayer.move(e);
-    // duplicate
-    if (activeLayer.widget.isSticky) {
-      this.makeSticky(activeLayer.widget);
-    }
+    this.move(e);
     // duplicate
     this.findCrossing({ ...activeLayer.widget, x: activeLayer.widget.x - sidebarWidth });
   }
 
   private onKeyboardMove(e: KeyboardEvent) {
+    activeLayer.onKeyDown(e);
     if (activeLayer.widget !== null) {
-      // add sticky here
-      activeLayer.onKeyDown(e);
-      if (activeLayer.widget.isSticky) {
-        this.makeSticky(activeLayer.widget);
-      }
       this.findCrossing({ ...activeLayer.widget, x: activeLayer.widget.x - sidebarWidth });
     }
   }
 
-  private makeSticky(widget: IWidget) {
-    // при движении вдоль оси - замыкать на перпендикулярную ось, если меньше лимита
-    // а если пересекается и подсвечивается - то нужно вычитать эту фигуру из подсветки или нет?
-    const stickyLimit = 50;
-    // !!!!!!!!!!!! перепроверь, по идее часть должна минусоваться, а в другую сторону двойная доза
-    const stickyArea = { ...widget,
-      x: widget.x  - sidebarWidth - stickyLimit,
-      y: widget.y - stickyLimit,
-      width: widget.width + stickyLimit * 2,
-      height: widget.height + stickyLimit * 2 };
-// ещё, кроме минуса сайдбара тут, надо будет его добавить к итогу. НАДО что-то с этиим сделать
-    const candidates = widgetLayer.renderStack
-      .onlySticky()
-      .filter(el => checkCrossing(stickyArea, el));
-// в будущем по-хорошему нужно будет отдельно искать по осям
-// а ещё нельзя забывать про границы самого канваса
-// а ещё надо двигать только одну координату, при пересечении с пространством - как узнать которую?
-  if (candidates.length === 1) {
-      const { newX, newY } = findNeabors(stickyLimit, stickyArea, candidates[0]);
-      const reallyNewX = newX === widget.x ? newX : newX + sidebarWidth;
-      activeLayer.changeActiveWidget({ ...activeLayer.widget, x: reallyNewX, y: newY });
-    } else if (candidates.length === 2) {
-      const results = [];
-      candidates.map(el => results.push(findNeabors(stickyLimit, widget, el)));
-      const newX = results.reduce((a, b) => a.newX < b.newX ? a.newX : b.newX);
-      const newY = results.reduce((a, b) => a.newY < b.newY ? a.newY : b.newY);
-      const reallyNewX = newX === widget.x ? newX : newX - sidebarWidth;
-      activeLayer.changeActiveWidget({ ...activeLayer.widget, x: reallyNewX, y: newY });
-    } else if (candidates.length > 2) {
-// temporary the same, but need to change logic !!!
-      const results = [];
-      candidates.map(el => results.push(findNeabors(stickyLimit, widget, el)));
-      const newX = results.reduce((a, b) => a.newX < b.newX ? a.newX : b.newX);
-      const newY = results.reduce((a, b) => a.newY < b.newY ? a.newY : b.newY);
-      const reallyNewX = newX === widget.x ? newX : newX - sidebarWidth;
-      activeLayer.changeActiveWidget({ ...activeLayer.widget, x: reallyNewX, y: newY });
+  private move(e: MouseEvent) { // set position.
+    const actWidget = activeLayer.widget; // for short
+    if (actWidget !== null && e.buttons) {
+      const { x, y } = calculateMiddle(actWidget.width, actWidget.height, e.offsetX, e.offsetY);
+      let xMiddle = x + e.movementX;
+      let yMiddle = y + e.movementY;
+      const staticWidget = { ...actWidget, x: xMiddle - sidebarWidth, y: yMiddle };
+      const candidates = widgetLayer.renderStack
+        .onlySticky()
+        .filter((el) => {
+          return checkCrossing({ ...staticWidget, x: staticWidget.x + stickyLimit }, el) // move right
+            || checkCrossing({ ...staticWidget, x: staticWidget.x - stickyLimit }, el)   // move left
+            || checkCrossing({ ...staticWidget, y: staticWidget.y + stickyLimit }, el)   // move down
+            || checkCrossing({ ...staticWidget, y: staticWidget.y - stickyLimit }, el);  // move up
+        });
+        let resultsX: {x: number }[] = [];
+        let resultsY: {y: number }[] = [];
+
+      const neabors = widgetLayer.renderStack
+        .onlySticky()
+        .filter((el) => {
+          return Math.abs(el.x - stickyLimit) < staticWidget.x && el.x + stickyLimit > staticWidget.x
+            || Math.abs(el.y - stickyLimit) < staticWidget.y && el.y + stickyLimit > staticWidget.y
+            || Math.abs(el.x + el.width - stickyLimit) < staticWidget.x && el.x + el.width + stickyLimit > staticWidget.x
+            || Math.abs(el.y + el.height - stickyLimit) < staticWidget.y && el.y + el.height + stickyLimit > staticWidget.y;
+        });
+        if (neabors.length !== 0) {
+          console.log('neabors');
+          console.log(neabors);
+          neabors.forEach((el) => {
+            // const stickyX = el.x > staticWidget.x ? el.x + 1 : el.x + 1;
+            resultsX.push({ x: el.x });
+          });
+          neabors.forEach((el) => {
+            // const stickyY = el.y > staticWidget.y ? el.y - 1 : el.y + 1;
+            // console.log(stickyY);
+            resultsY.push({ y: el.y });
+          });
+        }
+
+      if (candidates.length !== 0) {
+        console.log('candidates');
+        console.log(candidates);
+
+        candidates.forEach((el) => {
+          const stickyX = el.x > staticWidget.x ? el.x - staticWidget.width - 1 : el.x + el.width + 1;
+          resultsX.push({ x: stickyX });
+        });
+        candidates.forEach((el) => {
+          const stickyY = el.y > staticWidget.y ? el.y - staticWidget.height - 1 : el.y + el.height + 1;
+          resultsY.push({ y: stickyY });
+        });
+        resultsX = resultsX.filter(el => Math.abs(staticWidget.x - el.x) < stickyLimit);
+        resultsY = resultsY.filter(el => Math.abs(staticWidget.y - el.y) < stickyLimit);
+        if (resultsX.length !== 0 && resultsY.length !== 0) {
+          const control = widgetLayer.renderStack.filter((el) => {
+            return checkCrossing({ ...staticWidget, x: resultsX[0].x, y: resultsY[0].y }, el);
+          });
+          console.log(resultsX);
+          console.log(resultsY);
+          if (control.length === 0) {
+            xMiddle = resultsX[0].x + sidebarWidth;
+            yMiddle = resultsY[0].y;
+          }
+        } else {
+          if (resultsX.length !== 0) {
+            console.log(resultsX);
+              const controlX = widgetLayer.renderStack.filter((el) => {
+              return checkCrossing({ ...staticWidget, x: resultsX[0].x, y: yMiddle }, el);
+            });
+            if (controlX.length === 0) {
+              xMiddle = resultsX[0].x + sidebarWidth;
+            }
+          }
+          if (resultsY.length !== 0) {
+            console.log(resultsY);
+              const controlY = widgetLayer.renderStack.filter((el) => {
+              return checkCrossing({ ...staticWidget, x: xMiddle, y: resultsY[0].y }, el);
+            });
+            if (controlY.length === 0) {
+              yMiddle = resultsY[0].y;
+            }
+          }
+        }
+      }
+      console.log(`and x = ${xMiddle}, y = ${yMiddle}`);
+      activeLayer.changeActiveWidget({ ...actWidget, x: xMiddle, y: yMiddle });
     }
-// надо учитывать новые координаты виджета и координаты всех из стэка + не забыть про ширину сайдбара
-// если одна из границ виджета на расстоянии 15 пикселей
-// и при этом на новом месте не будет ни с кем пересекаться, то переместить к той границе -1
-// надо контролировать при последующем движении - что если граница всё ещё рядом, то двигать по оси вдоль
-// не меняя координату той оси
-// и если курсор мыши подвинулся дальше чем на 5-15 пикселей в противоположную от виджета сторону - то отлепить
-// в том числе и на пересечение, после чего провериить на красный
   }
 
   private createNewWidget(e: MouseEvent) {

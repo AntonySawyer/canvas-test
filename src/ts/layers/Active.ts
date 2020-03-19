@@ -1,7 +1,7 @@
 import { Layer } from './Layer';
-import { zIndActiveLayerOnTop, zIndActiveLayerBottom, canvasWidth, canvasHeight, sidebarWidth } from '../constants';
+import { zIndActiveLayerOnTop, zIndActiveLayerBottom, canvasWidth, canvasHeight, sidebarWidth, stickyLimit } from '../constants';
 import { IWidget } from '../interfaces';
-import { checkBorders, calculateMiddle } from '../helpers/math';
+import { checkBorders } from '../helpers/math';
 
 const activeCanvas = document.getElementById('activeCanvas') as HTMLCanvasElement;
 const ctxActiveLayer = activeCanvas.getContext('2d');
@@ -60,19 +60,28 @@ class Active extends Layer {
     }
   }
 
-  move(e: MouseEvent) { // set position.
-    if (this.widget !== null && e.buttons) {
-      const { x, y } = calculateMiddle(this.widget.width, this.widget.height, e.offsetX, e.offsetY);
-      const xMiddle = x + e.movementX;
-      const yMiddle = y + e.movementY;
-      this.changeActiveWidget({ ...this.widget, x: xMiddle, y: yMiddle });
-    }
-  }
+  // move(e: MouseEvent) { // set position.
+  //   if (this.widget !== null && e.buttons) {
+  //     const { x, y } = calculateMiddle(this.widget.width, this.widget.height, e.offsetX, e.offsetY);
+  //     const xMiddle = x + e.movementX;
+  //     const yMiddle = y + e.movementY;
+  //     this.changeActiveWidget({ ...this.widget, x: xMiddle, y: yMiddle });
+  //   }
+  // }
 
   private render() {
     this.activeLayerHoisted(true);
     this.clearCanvas();
     this.draw(this.widget);
+// temp
+    this.ctx.lineWidth = 0.5;
+    const stickyArea = { ...this.widget,
+      x: this.widget.x  - stickyLimit,
+      y: this.widget.y - stickyLimit,
+      width: this.widget.width + stickyLimit * 2,
+      height: this.widget.height + stickyLimit * 2 };
+    this.ctx.strokeRect(stickyArea.x, stickyArea.y, stickyArea.width, stickyArea.height);
+
   }
 }
 
