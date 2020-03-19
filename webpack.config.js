@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/app.ts',
+  entry: './src/ts/app.ts',
   module: {
     rules: [
       {
@@ -11,8 +11,11 @@ module.exports = {
       },
     ],
   },
+  devServer: {
+    contentBase: './',
+  },
   resolve: {
-    extensions: [ '.ts', '.js' ],
+    extensions: ['.ts', '.js'],
   },
   output: {
     filename: 'app.js',
