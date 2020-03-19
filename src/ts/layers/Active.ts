@@ -1,5 +1,6 @@
 import { Layer } from './Layer';
-import { zIndActiveLayerOnTop, zIndActiveLayerBottom, canvasWidth, canvasHeight, sidebarWidth, stickyLimit } from '../constants';
+import { zIndActiveLayerOnTop, zIndActiveLayerBottom, canvasWidth,
+        canvasHeight, sidebarWidth, sticking } from '../constants';
 import { IWidget } from '../interfaces';
 import { checkBorders } from '../helpers/math';
 
@@ -21,23 +22,6 @@ class Active extends Layer {
     widget !== null ? this.render() : this.activeLayerHoisted(false);
   }
 
-  onKeyDown(e: KeyboardEvent) {
-    switch (e.key) {
-      case 'ArrowUp':
-        this.moveArr(0, -1);
-        break;
-      case 'ArrowDown':
-        this.moveArr(0, 1);
-        break;
-      case 'ArrowRight':
-        this.moveArr(1, 0);
-        break;
-      case 'ArrowLeft':
-        this.moveArr(-1, 0);
-        break;
-    }
-  }
-
   private activeLayerHoisted(isHoisted: boolean) {
     activeCanvas.style.zIndex = isHoisted ? zIndActiveLayerOnTop : zIndActiveLayerBottom;
     activeCanvas.style.cursor = isHoisted ? 'move' : 'default';
@@ -52,35 +36,20 @@ class Active extends Layer {
     }
   }
 
-  private moveArr(movementX: number, movementY: number) { // set position.
-    if (this.widget !== null) {
-      const x = this.widget.x + movementX;
-      const y = this.widget.y + movementY;
-      this.changeActiveWidget({ ...this.widget, x, y });
-    }
-  }
-
-  // move(e: MouseEvent) { // set position.
-  //   if (this.widget !== null && e.buttons) {
-  //     const { x, y } = calculateMiddle(this.widget.width, this.widget.height, e.offsetX, e.offsetY);
-  //     const xMiddle = x + e.movementX;
-  //     const yMiddle = y + e.movementY;
-  //     this.changeActiveWidget({ ...this.widget, x: xMiddle, y: yMiddle });
-  //   }
-  // }
-
-  private render() {
+  render() {
     this.activeLayerHoisted(true);
     this.clearCanvas();
-    this.draw(this.widget);
+    this.widget.draw();
 // temp
-    this.ctx.lineWidth = 0.5;
-    const stickyArea = { ...this.widget,
-      x: this.widget.x  - stickyLimit,
-      y: this.widget.y - stickyLimit,
-      width: this.widget.width + stickyLimit * 2,
-      height: this.widget.height + stickyLimit * 2 };
-    this.ctx.strokeRect(stickyArea.x, stickyArea.y, stickyArea.width, stickyArea.height);
+    if (this.widget.isSticky) {
+      this.ctx.lineWidth = 0.5;
+      const stickyArea = { ...this.widget,
+        x: this.widget.x  - sticking,
+        y: this.widget.y - sticking,
+        width: this.widget.width + sticking * 2,
+        height: this.widget.height + sticking * 2 };
+      this.ctx.strokeRect(stickyArea.x, stickyArea.y, stickyArea.width, stickyArea.height);
+    }
 
   }
 }

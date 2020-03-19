@@ -1,5 +1,5 @@
 import { IWidget, ILayer } from '../interfaces';
-import { defaultWidgetColor } from '../constants';
+import { defaultColor } from '../constants';
 
 export class Layer implements ILayer {
   constructor(ctx: CanvasRenderingContext2D, width: number, height: number) {
@@ -10,13 +10,13 @@ export class Layer implements ILayer {
     ctx.canvas.height = height;
   }
 
-  ctx: CanvasRenderingContext2D;
-  width: number;
-  height: number;
+  protected ctx: CanvasRenderingContext2D;
+  protected width: number;
+  protected height: number;
 
   draw(widget: IWidget) {
     this.ctx.fillStyle = (widget.color === undefined || widget.color === null)
-                        ? defaultWidgetColor : widget.color;
+                        ? defaultColor : widget.color;
     this.ctx.fillRect(widget.x, widget.y, widget.width, widget.height);
     this.ctx.lineWidth = 0.5;
     this.ctx.strokeRect(widget.x, widget.y, widget.width, widget.height);

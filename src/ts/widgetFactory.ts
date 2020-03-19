@@ -1,10 +1,11 @@
-import { widgetSamples } from './constants';
-import { calculateMiddle } from './helpers/math';
+import { stickyColor, defaultColor } from './constants';
+import RectWidget from './RectWidget';
 
-export default function widgetFactory(id: number, sampleId: number,
-                                      xEvent: number, yEvent: number, isSticky: boolean) {
-  const sample = widgetSamples.filter(el => el.id === sampleId)[0];
-  const widget = Object.assign({}, sample);
-  const { x, y } = calculateMiddle(widget.width, widget.height, xEvent, yEvent);
-  return { ...widget, x, y, id, isSticky };
+export default function widgetFactory(id: number, coords: {x: number, y: number},
+                                      isSticky: boolean, width: number, height: number) {
+// type detect here
+
+  // temp
+  const color = isSticky ? stickyColor : defaultColor;
+  return new RectWidget(id, coords, isSticky, color, width, height);
 }

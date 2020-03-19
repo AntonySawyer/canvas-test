@@ -1,14 +1,15 @@
 import { activeLayer } from './layers/Active';
-import { widgetLayer } from './layers/Widget';
+import { staticLayer } from './layers/Static';
 import widgetFactory from './widgetFactory';
 
-import { isClickInsideWidget, checkCrossing, calculateMiddle } from './helpers/math';
-import { sidebarWidth, activeWidgetColor, stickyWidgetColor, defaultWidgetColor, highlightColor, stickyLimit } from './constants';
+import { isClickInsideWidget, checkCrossing, calculateMiddle, getNearest,
+          getStickyCoordinates, unstickKeyboard} from './helpers/math';
 import { IWidget } from './interfaces';
+import { sidebarWidth, sticking, widgetSamples } from './constants';
 
 export default class LayersManager {
   constructor() {
-    document.getElementById('widgetCanvas')
+    document.getElementById('staticCanvas')
             .addEventListener('mousedown', (e: MouseEvent) => this.fromWidgetsToActive(e));
     document.querySelectorAll('.widgetSample').forEach((el) => {
       el.addEventListener('mousedown', (e: MouseEvent) => this.createNewWidget(e));
@@ -21,134 +22,93 @@ export default class LayersManager {
   private crossingIds: number[] = [];
 
   private onMouseMove(e: MouseEvent) {
-    this.move(e);
-    // duplicate
-    this.findCrossing({ ...activeLayer.widget, x: activeLayer.widget.x - sidebarWidth });
+    if (activeLayer.widget !== null && e.buttons === 1) {
+      const { offsetX, offsetY, movementX, movementY } = e;
+      const { x, y } = calculateMiddle(activeLayer.widget.width, activeLayer.widget.height,
+                                       offsetX, offsetY);
+      this.move(x, y, movementX, movementY, 'mouse');
+    }
   }
 
   private onKeyboardMove(e: KeyboardEvent) {
-    activeLayer.onKeyDown(e);
     if (activeLayer.widget !== null) {
-      this.findCrossing({ ...activeLayer.widget, x: activeLayer.widget.x - sidebarWidth });
+      const coords = [];
+      switch (e.key) {
+        case 'ArrowUp':
+          coords.push(0, -1);
+          break;
+        case 'ArrowDown':
+          coords.push(0, 1);
+          break;
+        case 'ArrowRight':
+          coords.push(1, 0);
+          break;
+        case 'ArrowLeft':
+          coords.push(-1, 0);
+          break;
+        default: // ignore other keys
+          return;
+      }
+      this.move(activeLayer.widget.x, activeLayer.widget.y, coords[0], coords[1], 'keyboard');
     }
   }
 
-  private move(e: MouseEvent) { // set position.
-    const actWidget = activeLayer.widget; // for short
-    if (actWidget !== null && e.buttons) {
-      const { x, y } = calculateMiddle(actWidget.width, actWidget.height, e.offsetX, e.offsetY);
-      let xMiddle = x + e.movementX;
-      let yMiddle = y + e.movementY;
-      const staticWidget = { ...actWidget, x: xMiddle - sidebarWidth, y: yMiddle };
-      const candidates = widgetLayer.renderStack
-        .onlySticky()
-        .filter((el) => {
-          return checkCrossing({ ...staticWidget, x: staticWidget.x + stickyLimit }, el) // move right
-            || checkCrossing({ ...staticWidget, x: staticWidget.x - stickyLimit }, el)   // move left
-            || checkCrossing({ ...staticWidget, y: staticWidget.y + stickyLimit }, el)   // move down
-            || checkCrossing({ ...staticWidget, y: staticWidget.y - stickyLimit }, el);  // move up
-        });
-        let resultsX: {x: number }[] = [];
-        let resultsY: {y: number }[] = [];
-
-      const neabors = widgetLayer.renderStack
-        .onlySticky()
-        .filter((el) => {
-          return Math.abs(el.x - stickyLimit) < staticWidget.x && el.x + stickyLimit > staticWidget.x
-            || Math.abs(el.y - stickyLimit) < staticWidget.y && el.y + stickyLimit > staticWidget.y
-            || Math.abs(el.x + el.width - stickyLimit) < staticWidget.x && el.x + el.width + stickyLimit > staticWidget.x
-            || Math.abs(el.y + el.height - stickyLimit) < staticWidget.y && el.y + el.height + stickyLimit > staticWidget.y;
-        });
-        if (neabors.length !== 0) {
-          console.log('neabors');
-          console.log(neabors);
-          neabors.forEach((el) => {
-            // const stickyX = el.x > staticWidget.x ? el.x + 1 : el.x + 1;
-            resultsX.push({ x: el.x });
-          });
-          neabors.forEach((el) => {
-            // const stickyY = el.y > staticWidget.y ? el.y - 1 : el.y + 1;
-            // console.log(stickyY);
-            resultsY.push({ y: el.y });
-          });
-        }
-
-      if (candidates.length !== 0) {
-        console.log('candidates');
-        console.log(candidates);
-
-        candidates.forEach((el) => {
-          const stickyX = el.x > staticWidget.x ? el.x - staticWidget.width - 1 : el.x + el.width + 1;
-          resultsX.push({ x: stickyX });
-        });
-        candidates.forEach((el) => {
-          const stickyY = el.y > staticWidget.y ? el.y - staticWidget.height - 1 : el.y + el.height + 1;
-          resultsY.push({ y: stickyY });
-        });
-        resultsX = resultsX.filter(el => Math.abs(staticWidget.x - el.x) < stickyLimit);
-        resultsY = resultsY.filter(el => Math.abs(staticWidget.y - el.y) < stickyLimit);
-        if (resultsX.length !== 0 && resultsY.length !== 0) {
-          const control = widgetLayer.renderStack.filter((el) => {
-            return checkCrossing({ ...staticWidget, x: resultsX[0].x, y: resultsY[0].y }, el);
-          });
-          console.log(resultsX);
-          console.log(resultsY);
-          if (control.length === 0) {
-            xMiddle = resultsX[0].x + sidebarWidth;
-            yMiddle = resultsY[0].y;
-          }
-        } else {
-          if (resultsX.length !== 0) {
-            console.log(resultsX);
-              const controlX = widgetLayer.renderStack.filter((el) => {
-              return checkCrossing({ ...staticWidget, x: resultsX[0].x, y: yMiddle }, el);
-            });
-            if (controlX.length === 0) {
-              xMiddle = resultsX[0].x + sidebarWidth;
-            }
-          }
-          if (resultsY.length !== 0) {
-            console.log(resultsY);
-              const controlY = widgetLayer.renderStack.filter((el) => {
-              return checkCrossing({ ...staticWidget, x: xMiddle, y: resultsY[0].y }, el);
-            });
-            if (controlY.length === 0) {
-              yMiddle = resultsY[0].y;
-            }
-          }
-        }
+  private move(x: number, y: number, movementX: number, movementY: number, mode: ('keyboard' | 'mouse')) {
+    let supposedX = x + movementX - sidebarWidth;
+    let supposedY = y + movementY;
+    if (activeLayer.widget.isSticky) {
+      const widget = activeLayer.widget.setPosition(supposedX, supposedY);
+      let resultsX: number[] = getStickyCoordinates('x', staticLayer.stack, widget, sticking);
+      let resultsY: number[] = getStickyCoordinates('y', staticLayer.stack, widget, sticking);
+      if (mode === 'keyboard') {
+        resultsX = unstickKeyboard(resultsX, movementX, supposedX);
+        resultsY = unstickKeyboard(resultsY, movementY, supposedY);
       }
-      console.log(`and x = ${xMiddle}, y = ${yMiddle}`);
-      activeLayer.changeActiveWidget({ ...actWidget, x: xMiddle, y: yMiddle });
+      const nearestX = getNearest('x', resultsX, widget, supposedX);
+      const nearestY = getNearest('y', resultsY, widget, supposedY);
+      const isFailure = staticLayer.stack.some((el) => {
+        return checkCrossing(widget.setPosition(nearestX, nearestY), el);
+      });
+      if (!isFailure) {
+        supposedX = nearestX;
+        supposedY = nearestY;
+      }
     }
+    supposedX = supposedX + sidebarWidth;
+    activeLayer.widget.setPosition(supposedX, supposedY);
+    this.findCrossing();
   }
 
   private createNewWidget(e: MouseEvent) {
-    if (activeLayer.widget !== null) {
-      this.mergeActiveIntoWidget();
+    if (e.buttons === 1) {
+      if (activeLayer.widget !== null) {
+        this.mergeActiveIntoWidget();
+      }
+      const idFromEvent = (e.target as HTMLElement).dataset.id;
+      const { width, height } = widgetSamples.filter(el => el.id === +idFromEvent)[0];
+      const coords = calculateMiddle(width, height, e.clientX, e.clientY);
+      const newId = staticLayer.stack.getNewId();
+      const isSticky = (e.target as HTMLElement).classList.contains('stickyWidget');
+      const widget = widgetFactory(newId, coords, isSticky, width, height);
+      activeLayer.changeActiveWidget(widget);
+      this.findCrossing();
     }
-    const idFromEvent = (e.target as HTMLElement).dataset.id;
-    const newId = widgetLayer.renderStack.getNewId();
-    const isSticky = (e.target as HTMLElement).classList.contains('stickyWidget');
-    const widget = widgetFactory(newId, +idFromEvent, e.clientX, e.clientY, isSticky);
-    activeLayer.changeActiveWidget({ ...widget, color: activeWidgetColor });
   }
 
   private fromWidgetsToActive(e: MouseEvent) {
     const xForActive = e.offsetX + sidebarWidth;
     const inActive = activeLayer.widget !== null
                     && isClickInsideWidget(activeLayer.widget, xForActive, e.offsetY);
-    if (inActive) {
-      // костыль
-      // сам себя назначает, чтобы поднять холст для отслеживания движения И! меняет цвет
-      activeLayer.changeActiveWidget({ ...activeLayer.widget, color: activeWidgetColor });
+    if (inActive && e.buttons === 1) {
+      activeLayer.changeActiveWidget(activeLayer.widget); // really bad
     } else {
       this.mergeActiveIntoWidget();
-      for (const el of widgetLayer.renderStack.reverse()) {
+      for (const el of staticLayer.stack.reverse()) {
         const isInside = isClickInsideWidget(el, e.offsetX, e.offsetY);
-        if (isInside) {
-          activeLayer.changeActiveWidget({ ...el, x: el.x + sidebarWidth, color: activeWidgetColor });
-          widgetLayer.deleteWidget(el.id);
+        if (isInside && e.buttons === 1) {
+          activeLayer.changeActiveWidget(el.setActive());
+          staticLayer.stack.deleteWidget(el.id);
+          staticLayer.render();
           return;
         }
       }
@@ -158,60 +118,53 @@ export default class LayersManager {
 
   private mergeActiveIntoWidget() {
     if (activeLayer.widget !== null) {
-      if (activeLayer.widget.color !== highlightColor) {
-        widgetLayer.addWidget({ ...activeLayer.widget,
-          x: activeLayer.widget.x - sidebarWidth,
-          color: this.getColor(activeLayer.widget) });
+      if (!activeLayer.widget.isCrossing) {
+        staticLayer.addWidget(activeLayer.widget.setInactive());
         activeLayer.changeActiveWidget(null);
       } else {
         this.crossingIds.forEach((id) => {
-          widgetLayer.highlight(id, this.getColor(widgetLayer.renderStack.getWidgetById(id)));
+          staticLayer.highlight(id);
         });
         this.crossingIds.length = 0;
       }
     }
   }
 
-  private findCrossing(widget: IWidget) {
-    // T____T
-    // может добавить проверки на текущий цвет, типа не перекрашивать активный, если он уже красный
-    const crossingWidgets = widgetLayer.renderStack
-                            .filter(el => checkCrossing(el, widget));
-    crossingWidgets.map((el) => {
-      widgetLayer.highlight(el.id, highlightColor);
-    });
-    if (crossingWidgets.length > 0 && !crossingWidgets.includes(widget)) {
-      activeLayer.changeActiveWidget({ ...widget, x: widget.x + sidebarWidth, color: highlightColor });
+  private findCrossing() {
+    const widget = activeLayer.widget.setInactive();
+    const crossingWidgets = staticLayer.stack.filter(el => checkCrossing(el, widget));
+// убрать нафиг переменную потом, брать по флагам
+    crossingWidgets.map(el => el.setCrossing());
+    if (crossingWidgets.length > 0) {
+      activeLayer.widget.setActive().setCrossing();
       if (this.crossingIds.length !== crossingWidgets.length) {
         this.crossingIds.map((id) => {
           if (crossingWidgets.filter(el => el.id === id).length > 0) {
             return id;
           }
-          widgetLayer.highlight(id, this.getColor(widgetLayer.renderStack.getWidgetById(id)));
+          staticLayer.stack.getWidgetById(id).resetColor();
           return null;
         });
       }
       this.crossingIds = this.crossingIds.filter(id => id !== null);
     } else {
-      activeLayer.changeActiveWidget({ ...widget, x: widget.x + sidebarWidth, color: activeWidgetColor });
-      this.crossingIds.map(id => widgetLayer.highlight(id, this.getColor(widgetLayer.renderStack.getWidgetById(id))));
+// либо чейнить и рендер выносить, либо позже с подписками что-то станет яснее
+      activeLayer.widget.setActive().setUncrossing();
+      staticLayer.stack.onlyHightLighted().map(el => el.resetColor());
       this.crossingIds.length = 0;
     }
-    widgetLayer.renderStack
-        .filter(el => el.color === highlightColor)
+    staticLayer.stack
+      .onlyHightLighted()
+// вот тут косяк, как бы не должно быть метода
         .forEach((el) => {
           if (!this.crossingIds.includes(el.id)) {
             this.crossingIds.push(el.id);
           }
         });
-    widgetLayer.renderStack.map((el) => {
-      return !crossingWidgets.includes(el)
-                ? { ...el, color: this.getColor(el) }
-                : { ...el, color: highlightColor };
+    staticLayer.stack.map((el: IWidget) => {
+      return !crossingWidgets.includes(el) ? el.resetColor() : el.setCrossing();
     });
-  }
-
-  private getColor(widget: IWidget) {
-    return widget.isSticky ? stickyWidgetColor : defaultWidgetColor;
+    activeLayer.render();
+    staticLayer.render();
   }
 }

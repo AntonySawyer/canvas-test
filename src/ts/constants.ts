@@ -1,4 +1,3 @@
-import { IWidget } from './interfaces';
 
 export const canvasHeight = 900; // split to few files ?
 export const canvasWidth = 1600;
@@ -6,14 +5,14 @@ export const sidebarWidth = 351;
 export const zIndActiveLayerOnTop = '3';
 export const zIndActiveLayerBottom = '0';
 
-export const defaultWidgetColor = '#cebf64';
+export const sticking = 50;
+
+export const defaultColor = '#cebf64';
 export const highlightColor = '#f3906d';
-export const stickyWidgetColor = '#846cd6';
-export const activeWidgetColor = '#44bd0d';
+export const stickyColor = '#846cd6';
+export const activeColor = '#44bd0d';
 
-export const stickyLimit = 50;
-
-export const widgetSamples: ReadonlyArray<IWidget> = [
+export const widgetSamples = [
   { id: 15, width: 15, height: 75 },
   { id: 20, width: 20, height: 45 },
   { id: 25, width: 25, height: 60 },

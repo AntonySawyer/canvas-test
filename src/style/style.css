@@ -23,7 +23,7 @@ canvas {
 }
 
 .sidebarWrapper,
-#widgetCanvas {
+#staticCanvas {
     border-right: none;
 }
 
