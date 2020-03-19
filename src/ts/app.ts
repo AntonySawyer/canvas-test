@@ -1,9 +1,8 @@
 import { generateSidebar } from './helpers/generateDOM';
-import Controller from './Controller';
-
-const controlLayers = new Controller(); // or like Subscriber ?
+import LayersManager from './LayersManager';
 
 window.onload = () => {
   generateSidebar();
-  controlLayers.init(); // remove
+  // tslint:disable-next-line: no-unused-expression
+  new LayersManager();
 };

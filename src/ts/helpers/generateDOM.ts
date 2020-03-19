@@ -3,18 +3,23 @@ import { widgetSamples } from '../constants';
 export function generateSidebar() { // FIX ME
   const container = document.createElement('div');
   container.className = 'widgetsContainer';
+  const stickyContainer = document.createElement('div');
+  stickyContainer.classList.add('widgetsContainer', 'sticky');
+
   widgetSamples.forEach((widget) => {
-    const widgetSample = document.createElement('div');
-    widgetSample.className = 'widgetSample';
-    widgetSample.setAttribute('data-id', widget.id.toString());
-    const descr = document.createElement('span');
-    descr.className = 'widgetSampleDescr';
-    descr.innerText = `${widget.id}0mm`;
-    const icon = document.createElement('span');
-    icon.className = 'widgetSampleIcon';
-    icon.innerText = '☰';
-    widgetSample.append(descr, icon);
-    container.appendChild(widgetSample);
+    container.innerHTML += `<div class="widgetSample" data-id="${widget.id.toString()}">
+                              <span class="widgetSampleDescr">${widget.id}0mm</span>
+                              <span class="widgetSampleIcon">☰</span>
+                            </div>`;
   });
+
+  widgetSamples.forEach((widget) => {
+    stickyContainer.innerHTML += `<div class="widgetSample stickyWidget" data-id="${widget.id.toString()}">
+                              <span class="widgetSampleDescr">${widget.width}x${widget.height}</span>
+                              <span class="widgetSampleIcon">☰</span>
+                            </div>`;
+  });
+
+  document.querySelector('.sidebarWrapper').insertBefore(stickyContainer, document.querySelectorAll('select')[0]); // FIX ME
   document.querySelector('.sidebarWrapper').insertBefore(container, document.querySelectorAll('select')[0]);
 }

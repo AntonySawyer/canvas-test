@@ -6,6 +6,8 @@ export class Layer implements ILayer {
     this.ctx = ctx;
     this.width = width;
     this.height = height;
+    ctx.canvas.width = width;
+    ctx.canvas.height = height;
   }
 
   ctx: CanvasRenderingContext2D;
@@ -18,11 +20,6 @@ export class Layer implements ILayer {
     this.ctx.fillRect(widget.x, widget.y, widget.width, widget.height);
     this.ctx.lineWidth = 0.5;
     this.ctx.strokeRect(widget.x, widget.y, widget.width, widget.height);
-  }
-
-  setSizes() {
-    this.ctx.canvas.width = this.width;
-    this.ctx.canvas.height = this.height;
   }
 
   clearCanvas() {

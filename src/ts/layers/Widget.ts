@@ -1,8 +1,8 @@
 import { Layer } from './Layer';
-import { canvasWidth, sidebarWidth, canvasHeight, highlightColor } from '../constants';
-import { IWidget } from '../interfaces';
-import { findWidgetIndex, outOfBorders } from '../helpers/widgetsHelper';
-import { checkCrossing } from '../helpers/math';
+import { canvasWidth, sidebarWidth, canvasHeight } from '../constants';
+import { IWidget, IRenderStack } from '../interfaces';
+import RenderStack from '../helpers/RenderStack';
+import { checkBorders } from '../helpers/math';
 
 const widgetsCanvas = document.getElementById('widgetCanvas') as HTMLCanvasElement;
 const ctxWidgets = widgetsCanvas.getContext('2d');
@@ -10,40 +10,26 @@ const ctxWidgets = widgetsCanvas.getContext('2d');
 class Widget extends Layer {
   constructor(ctx: CanvasRenderingContext2D, width: number, height: number) {
     super(ctx, width, height);
-    // sizes here
   }
-  renderStack: IWidget[] = [];
+  renderStack: IRenderStack = new RenderStack();
 
   addWidget(widget: IWidget) {
-    const isOutOfBorders = outOfBorders(widget, 0, canvasWidth, canvasHeight, sidebarWidth);
-    if (isOutOfBorders) {
-      this.renderStack.push({ ...widget, x: widget.x - sidebarWidth });
+    const needToAdd = checkBorders(widget, 0, this.width, this.height, 0);
+    if (needToAdd) {
+      this.renderStack.push(widget);
     }
-    this.renderStack.map(el => this.findCrossing(el));
     this.render();
   }
 
   deleteWidget(id: number) {
-    const index = findWidgetIndex(id, this.renderStack);
+    const index = this.renderStack.findWidgetIndex(id);
     this.renderStack.splice(index, 1);
     this.render();
   }
 
-  private findCrossing(widget: IWidget) {
-    const somethingIsCrossing = checkCrossing(widget, this.renderStack);
-    if (somethingIsCrossing) {
-      this.highlight(widget);
-    } else if (widget.color !== undefined) {
-      this.deleteHighlight(widget);
-    }
-  }
-
-  private highlight(widget: IWidget) {
-    widget.color = highlightColor;
-  }
-
-  private deleteHighlight(widget: IWidget) {
-    widget.color = null;
+  highlight(id: number, color: string) {
+    this.renderStack.getWidgetById(id).color = color;
+    this.render();
   }
 
   private render() {

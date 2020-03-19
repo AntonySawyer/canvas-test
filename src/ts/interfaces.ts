@@ -5,27 +5,19 @@ export interface IWidget {
   readonly width: number;
   readonly height: number;
   color?: string;
+  isSticky?: boolean;
+}
+
+export interface IRenderStack extends Array<IWidget> {
+  [index: number]: IWidget;
+  getNewId: () => number;
+  findWidgetIndex: (id: number) => number;
+  stackWithoutId: (id: number) => IWidget[];
+  getWidgetById: (id: number) => IWidget;
+  onlySticky: () => IWidget[];
 }
 
 export interface ILayer {
   draw: (widget: IWidget) => void;
-  setSizes: (width: number, height: number) => void;
   clearCanvas: () => void;
 }
-
-export interface IControl {
-  init: () => void;
-}
-
-export interface ISubscriber {
-  subscribe (parent: string, selector: 'string',
-             type: string, fn: (data: MouseEventInit) => void): void;
-  unSubscribe (parent: string, type: string, selector: string): void;
-}
-
-export type IObserver = {
-  parent: string;
-  selector: string;
-  type: string;
-  fn: (data: MouseEventInit) => void;
-};

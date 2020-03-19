@@ -1,16 +1,10 @@
-import { getNewId } from './helpers/widgetsHelper';
 import { widgetSamples } from './constants';
 import { calculateMiddle } from './helpers/math';
-import { IWidget } from './interfaces';
 
-export default function widgetFactory(stack: IWidget[], id: number,
-                                      xEvent: number, yEvent: number) {
-  const widget = Object.assign({}, findSample(id, widgetSamples));
+export default function widgetFactory(id: number, sampleId: number,
+                                      xEvent: number, yEvent: number, isSticky: boolean) {
+  const sample = widgetSamples.filter(el => el.id === sampleId)[0];
+  const widget = Object.assign({}, sample);
   const { x, y } = calculateMiddle(widget.width, widget.height, xEvent, yEvent);
-  return { ...widget, x, y, id: getNewId(stack) };
+  return { ...widget, x, y, id, isSticky };
 }
-
-// its must be inside factory ?
-const findSample = (id: number, samples: readonly IWidget[]) => {
-  return samples.filter(el => el.id === id)[0];
-};
