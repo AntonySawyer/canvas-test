@@ -3,8 +3,13 @@ body {
     font-family: sans-serif;
 }
 
-#activeLayer {
+canvas {
+    border: 1px solid black;
+}
+
+#activeCanvas {
     position: absolute;
+    pointer-events: none;
 }
 
 .sidebarWrapper {
@@ -12,15 +17,21 @@ body {
     z-index: 2;
     padding: 10px;
     background-color: #e7eaec;
+    border: 1px solid black;
 }
 
-.unitsContainer {
+.sidebarWrapper,
+#widgetCanvas {
+    border-right: none;
+}
+
+.widgetsContainer {
     display: flex;
     flex-wrap: wrap;
     margin-bottom: 15px;
 }
 
-.unit {
+.widgetSample {
     width: 100px;
     height: 40px;
     background-color: #ffffff;
@@ -31,11 +42,11 @@ body {
     box-shadow: 3px 2px 7px -5px #000000;
 }
 
-.unit:hover {
+.widgetSample:hover {
     cursor: pointer;
 }
 
-.unit > * {
+.widgetSample > * {
     pointer-events: none;
 }
 
@@ -49,11 +60,11 @@ body {
     padding: 0 10px;
 }
 
-.unitDescr {
+.widgetSampleDescr {
     font-size: 13px;
 }
 
-.unitIcon {
+.widgetSampleIcon {
     font-weight: 800;
     font-size: 14px;
 }
