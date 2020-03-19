@@ -76,3 +76,21 @@ export interface ICrossingService {
 export interface ILayersActionRunner {
   stack: IRenderStack;
 }
+
+// React
+export interface WidgetSampleProps {
+  id: number;
+  type: string; // fix me: widgetTypes
+  width: number;
+  height: number;
+  sticky: boolean;
+  scared: boolean;
+}
+
+export interface WidgetSamplesGroupProps {
+  samples: WidgetSampleProps[];
+}
+
+export interface SidebarProps {
+  widgetSamples: WidgetSampleProps[][];
+}
