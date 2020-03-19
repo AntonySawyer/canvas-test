@@ -8,37 +8,52 @@ export interface IWidget {
   isSticky?: boolean;
   defaultColor: string;
   isCrossing?: boolean;
-  setPosition: (x: number, y: number) => this;
-  setActive: () => this;
-  setInactive: () => this;
-  hightlight: () => this;
-  resetColor: () => this;
-  setCrossing: () => void;
-  setUncrossing: () => void;
-  getCtx: () => CanvasRenderingContext2D;
+  isActive: boolean;
+  setPosition: (x: number, y: number) => void;
+  setActive: () => void;
+  setInactive: () => void;
+  setCrossing: (isCrossing: boolean) => void;
   draw: () => void;
+  coordinateIsInside: (x: number, y: number) => boolean;
+  getPointsFromStatic: () => { x1: number, y1: number, x2: number, y2: number };
+  getPointsFromActive: () => { x1: number, y1: number, x2: number, y2: number };
+  moveToGeometricCenter: (xEvent: number, yEvent: number) => void;
+  inBorders: () => boolean;
+  checkCrossing: (widget: IWidget, limit?: number) => boolean;
 }
 
-// разобраться с возвратом IWidget[] и this
+export interface ISize {
+  width?: number;
+  height?: number;
+}
+
+export interface ICoordinate {
+  x: number;
+  y: number;
+}
+
+export interface IWidgetParams {
+  type: string;
+  isSticky: boolean;
+  color: string;
+  coordinate: ICoordinate;
+  size: ISize;
+}
 
 export interface IRenderStack {
+  rerender: () => void;
   addWidget: (widget: IWidget) => void;
   deleteWidget: (id: number) => void;
-  iterate: (callback: (el: IWidget) => void) => void;
-  some: (checkFn: any) => boolean;
-  reverse: () => IWidget[];
-  filter: (criteriaFn: (el: IWidget) => boolean) => IWidget[];
-  map: (applyFn) => IWidget[];
-  onlyHightLighted: () => IWidget[];
-
-  getNewId: () => number;
-  findWidgetIndex: (id: number) => number;
+  getActive: () => IWidget;
+  setNewActive: (widget: IWidget) => void;
+  getStack: () => IWidget[];
+  resetActive: () => void;
   stackWithoutId: (id: number) => IWidget[];
-  getWidgetById: (id: number) => IWidget;
   onlySticky: () => IWidget[];
+  activeIsExist: () => boolean;
+  isCrossingWithOthers: (widget: IWidget) => boolean;
 }
 
 export interface ILayer {
-  draw: (widget: IWidget) => void;
   clearCanvas: () => void;
 }

@@ -1,7 +1,6 @@
-import { IWidget, ILayer } from '../interfaces';
-import { defaultColor } from '../constants';
+import { ILayer } from '../interfaces';
 
-export class Layer implements ILayer {
+export default abstract class Layer implements ILayer {
   constructor(ctx: CanvasRenderingContext2D, width: number, height: number) {
     this.ctx = ctx;
     this.width = width;
@@ -14,15 +13,8 @@ export class Layer implements ILayer {
   protected width: number;
   protected height: number;
 
-  draw(widget: IWidget) {
-    this.ctx.fillStyle = (widget.color === undefined || widget.color === null)
-                        ? defaultColor : widget.color;
-    this.ctx.fillRect(widget.x, widget.y, widget.width, widget.height);
-    this.ctx.lineWidth = 0.5;
-    this.ctx.strokeRect(widget.x, widget.y, widget.width, widget.height);
-  }
-
   clearCanvas() {
     this.ctx.clearRect(0, 0, this.width, this.height);
   }
+
 }

@@ -1,8 +1,8 @@
-import { generateSidebar } from './helpers/generateDOM';
-import LayersManager from './LayersManager';
+import { generateSidebar } from './helpers/DOM';
+import LayersActionRunner from './LayersActionRunner';
 
 window.onload = () => {
   generateSidebar();
   // tslint:disable-next-line: no-unused-expression
-  new LayersManager();
+  new LayersActionRunner();
 };
