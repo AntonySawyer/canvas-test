@@ -1,59 +1,77 @@
-export interface IWidget {
-  id: number;
-  x?: number;
-  y?: number;
-  readonly width?: number;
-  readonly height?: number;
-  color?: string;
-  isSticky?: boolean;
-  defaultColor: string;
-  isCrossing?: boolean;
-  isActive: boolean;
-  setPosition: (x: number, y: number) => void;
-  setActive: () => void;
-  setInactive: () => void;
-  setCrossing: (isCrossing: boolean) => void;
-  draw: () => void;
-  coordinateIsInside: (x: number, y: number) => boolean;
-  getPointsFromStatic: () => { x1: number, y1: number, x2: number, y2: number };
-  getPointsFromActive: () => { x1: number, y1: number, x2: number, y2: number };
-  moveToGeometricCenter: (xEvent: number, yEvent: number) => void;
-  inBorders: () => boolean;
-  checkCrossing: (widget: IWidget, limit?: number) => boolean;
+import { WidgetColor, WidgetEvents, StackEvents, CanvasEvents } from './constants';
+
+export type Coordinate = { x: number, y: number };
+export type Size = { width?: number; height?: number };
+export type WidgetTypes = ('rect');
+export type MouseDownTarget = ('div' | 'canvas');
+export type KeyboardKeysForListen = ('ArrowUp' | 'ArrowDown' | 'ArrowRight' | 'ArrowLeft');
+export type NextMoveMode = ('mouse' | 'keyboard');
+
+export type Points = { first: Coordinate, last: Coordinate };
+
+export type SinteticEvents = (WidgetEvents | StackEvents | CanvasEvents);
+
+export interface ISubscriber {
+  subscribe: (trigger: SinteticEvents, callback: () => void) => void;
+  unsubscribe: (trigger: SinteticEvents, callback: () => void) => void;
+  notify: (trigger: SinteticEvents) => void;
 }
 
-export interface ISize {
-  width?: number;
-  height?: number;
+export interface IObserver {
+  trigger: SinteticEvents;
+  callback: () => void;
 }
 
-export interface ICoordinate {
+export interface IAxisPoint {
   x: number;
   y: number;
+  setPosition: (x: number, y: number) => void;
+  commitMovement: (movement: Coordinate) => void;
+  getCoordinate: () => Coordinate;
+  getPoints: () => Points;
+  coordinateIsInside: (coordinate: Coordinate) => boolean;
+}
+
+export interface IWidget extends IAxisPoint {
+  readonly id: number;
+  readonly isSticky: boolean;
+  readonly width?: number;
+  readonly height?: number;
+  color: string;
+  defaultColor: string;
+  isCrossing: boolean;
+  isActive: boolean;
+  setActive: (isActive: boolean) => void;
+  setCrossing: (isCrossing: boolean) => void;
+  draw: () => void;
+  moveToGeometricCenter: (xEvent: number, yEvent: number) => void;
+  isOutOfBorders: () => boolean;
 }
 
 export interface IWidgetParams {
-  type: string;
+  type: WidgetTypes;
   isSticky: boolean;
-  color: string;
-  coordinate: ICoordinate;
-  size: ISize;
+  color: WidgetColor;
+  coordinate: Coordinate;
+  size: Size;
 }
 
 export interface IRenderStack {
-  rerender: () => void;
+  activeWidget: IWidget;
   addWidget: (widget: IWidget) => void;
-  deleteWidget: (id: number) => void;
-  getActive: () => IWidget;
+  deleteActiveWidget: () => void;
   setNewActive: (widget: IWidget) => void;
   getStack: () => IWidget[];
   resetActive: () => void;
-  stackWithoutId: (id: number) => IWidget[];
-  onlySticky: () => IWidget[];
-  activeIsExist: () => boolean;
-  isCrossingWithOthers: (widget: IWidget) => boolean;
+  getStackWithoutId: (id: number) => IWidget[];
+  getOnlySticky: () => IWidget[];
+  hasActiveWidget: () => boolean;
 }
 
-export interface ILayer {
-  clearCanvas: () => void;
+export interface ICrossingService {
+  pointsCrossingWithOtherWidgets: (checkedId: number, checkedPoints: Points) => boolean;
+}
+
+export interface ILayersActionRunner {
+  stack: IRenderStack;
 }

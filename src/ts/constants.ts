@@ -1,27 +1,42 @@
-export const zIndexTop = '3';
-export const zIndexBottom = '0';
-
-export const cursorMove = 'move';
-export const cursorDefault = 'default';
-
-export const listenEvents = 'all';
-export const ignoreEvents = 'none';
-
-export const stickingLimit = 50;
-export const stickyWidgetClassName = 'stickyWidget';
-
+export const stickyLimit = 50;
 export const arrowSpeed = 5;
-
-export const defaultColor = '#cebf64';
-export const highlightColor = '#f3906d';
-export const stickyColor = '#846cd6';
-export const activeColor = '#44bd0d';
-
 export const primaryBtnIndex = 1;
 
-export const widgetTypes = {
-  rect: 'rect',
-};
+export enum zIndex {
+  top = '3',
+  bottom = '0',
+}
+
+export enum cursor {
+  move = 'move',
+  default = 'default',
+}
+
+export enum eventsStatus {
+  listen = 'all',
+  ignore = 'none',
+}
+
+export enum WidgetColor {
+  active = '#44bd0d',
+  hightlight = '#f3906d',
+  sticky = '#846cd6',
+  nonSticky = '#cebf64',
+}
+
+export enum CanvasEvents {
+  StaticLayerCleared = 'StaticLayerCleared',
+  ActiveLayerCleared = 'ActiveLayerCleared',
+}
+
+export enum StackEvents {
+  ActiveWidgetRemoved = 'ActiveWidgetRemoved',
+}
+
+export enum WidgetEvents {
+  SetNewPosition = 'SetNewPosition',
+  ChangeActiveStatus = 'ChangeActiveStatus',
+}
 
 export const widgetSamples = [
   { id: 15, type: 'rect', width: 15, height: 75 },

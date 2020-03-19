@@ -1,42 +1,67 @@
 import { IRenderStack, IWidget } from './interfaces';
+import { subscriber } from './Subscriber';
+import { StackEvents, CanvasEvents } from './constants';
 
 export default class RenderStack  implements IRenderStack {
   constructor() {
     this.stack = [];
+    subscriber.subscribe(CanvasEvents.ActiveLayerCleared, this.renderActiveWidget);
+    subscriber.subscribe(CanvasEvents.StaticLayerCleared, this.renderStaticWidgets);
   }
 
   private stack: IWidget[];
 
-  rerender = () => this.stack.forEach(el => el.draw());
+  get activeWidget(): IWidget {
+    return this.getActive();
+  }
 
-  addWidget = (widget: IWidget) => this.stack.push(widget);
+  addWidget = (widget: IWidget) => {
+    this.stack.push(widget);
+    this.setNewActive(widget);
+  }
 
-  deleteWidget(id: number) {
-    const index = this.stack.findIndex(el => el.id === id);
-    this.stack.splice(index, 1);
+  deleteActiveWidget() {
+    this.deleteWidget(this.activeWidget.id);
+    subscriber.notify(StackEvents.ActiveWidgetRemoved);
   }
 
   getStack = () => this.stack;
 
-  stackWithoutId = (id: number) => this.stack.filter(el => el.id !== id);
+  getStackWithoutId = (id: number) => this.stack.filter(widget => widget.id !== id);
 
-  isCrossingWithOthers = (widget: IWidget) => {
-    return this.stackWithoutId(widget.id).some(i => widget.checkCrossing(i));
-  }
+  getOnlySticky = () => this.stack.filter(widget => widget.isSticky);
 
-  onlySticky = () => this.stack.filter(el => el.isSticky);
-
-  getActive = () => this.stack.filter(el => el.isActive)[0];
-
-  resetActive = () => this.getActive().setInactive();
+  resetActive = () => this.activeWidget.setActive(false);
 
   setNewActive(widget: IWidget) {
-    if (this.activeIsExist()) {
+    if (this.hasActiveWidget()) {
       this.resetActive();
     }
-    widget.setActive();
+    widget.setActive(true);
   }
 
-  activeIsExist = () => this.getActive() !== undefined;
+  hasActiveWidget = () => this.activeWidget !== undefined;
+
+  private renderStaticWidgets = () => {
+    this.getOnlyStaticWidgets().forEach(widget => widget.draw());
+  }
+
+  private renderActiveWidget = () => {
+    if (this.hasActiveWidget()) {
+      this.activeWidget.draw();
+    }
+  }
+
+  private deleteWidget(id: number) {
+    const index = this.stack.findIndex(widget => widget.id === id);
+    this.stack.splice(index, 1);
+  }
+
+  private getActive = () => this.stack.filter(widget => widget.isActive)[0];
+
+  private getOnlyStaticWidgets = () => {
+    return this.hasActiveWidget() ? this.getStackWithoutId(this.activeWidget.id)
+          : this.getStack();
+  }
 
 }

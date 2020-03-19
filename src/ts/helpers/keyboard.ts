@@ -1,20 +1,19 @@
-import { ICoordinate, IWidget } from '../interfaces';
-import { sidebarWidth } from './DOM';
+import { Coordinate, IWidget } from '../interfaces';
 
 export function filterCandidatesForKeyboardUnstick(candidates: { x: number[], y: number[] },
-                                                   movement: ICoordinate, activeWidget: IWidget) {
-  candidates.x = filterOppositeToMovement(candidates.x, movement.x, activeWidget.x - sidebarWidth);
+                                                   movement: Coordinate, activeWidget: IWidget) {
+  candidates.x = filterOppositeToMovement(candidates.x, movement.x, activeWidget.x);
   candidates.y = filterOppositeToMovement(candidates.y, movement.y, activeWidget.y);
 }
+// rename filterOppositeToMovement coords + supposedPoints
+function filterOppositeToMovement(candidates: number[], movement: number, currentPoint: number) {
+  if (movement === 0) {
+    return [];
+  }
 
-// move into ?
-function filterOppositeToMovement(supposed: number[], movement: number, active: number) {
-  // return supposed.filter(el => movement > 0 !== el > active + movement);
-  if (movement > 0) {
-    return supposed.filter(el => el > active + movement);
-  }
-  if (movement < 0) {
-    return supposed.filter(el => el < active + movement);
-  }
-  return [];
+  const offset = currentPoint + movement;
+  return candidates.filter((point) => {
+    return movement > 0 ? point > offset : point < offset;
+  });
+
 }

@@ -1,23 +1,29 @@
 import Layer from './Layer';
-import { zIndexTop, zIndexBottom, cursorMove, cursorDefault, listenEvents, ignoreEvents } from '../constants';
-import { activeCanvas, ctxActiveLayer, activeWidth, activeHeight } from '../helpers/DOM';
+import { eventsStatus, StackEvents, WidgetEvents, CanvasEvents,
+         zIndex, cursor } from '../constants';
+import { activeCanvas, ctxActive, activeWidth, activeHeight } from '../helpers/DOM';
+import { subscriber } from '../Subscriber';
 
 class Active extends Layer {
   constructor(ctx: CanvasRenderingContext2D, width: number, height: number) {
     super(ctx, width, height);
+    subscriber.subscribe(StackEvents.ActiveWidgetRemoved, () => this.clearCanvas());
+    subscriber.subscribe(WidgetEvents.ChangeActiveStatus, () => this.clearCanvas());
+    subscriber.subscribe(WidgetEvents.SetNewPosition, () => this.clearCanvas());
   }
 
-  setActiveLayerOnTop(isActive: boolean) {
-    activeCanvas.style.zIndex = isActive ? zIndexTop : zIndexBottom;
-    activeCanvas.style.cursor = isActive ? cursorMove : cursorDefault;
-    activeCanvas.style.pointerEvents = isActive ? listenEvents : ignoreEvents;
+  protected clearCanvas = () => {
+    // console.warn('we clear Active');
+    super.clearCanvas();
+    subscriber.notify(CanvasEvents.ActiveLayerCleared);
   }
 
-  resetCanvas() {
-    this.clearCanvas();
-    this.setActiveLayerOnTop(false);
+  setLayerOnTop(isActive: boolean) {
+    activeCanvas.style.zIndex = isActive ? zIndex.top : zIndex.bottom;
+    activeCanvas.style.cursor = isActive ? cursor.move : cursor.default;
+    activeCanvas.style.pointerEvents = isActive ? eventsStatus.listen : eventsStatus.ignore;
   }
 
 }
 
-export const activeLayer = new Active(ctxActiveLayer, activeWidth, activeHeight);
+export const activeLayer = new Active(ctxActive, activeWidth, activeHeight);

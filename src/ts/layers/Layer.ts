@@ -1,6 +1,4 @@
-import { ILayer } from '../interfaces';
-
-export default abstract class Layer implements ILayer {
+export default abstract class Layer {
   constructor(ctx: CanvasRenderingContext2D, width: number, height: number) {
     this.ctx = ctx;
     this.width = width;
@@ -13,7 +11,7 @@ export default abstract class Layer implements ILayer {
   protected width: number;
   protected height: number;
 
-  clearCanvas() {
+  protected clearCanvas() {
     this.ctx.clearRect(0, 0, this.width, this.height);
   }
 

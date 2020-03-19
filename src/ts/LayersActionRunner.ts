@@ -1,14 +1,15 @@
-import { activeLayer } from './layers/Active';
-import { staticLayer } from './layers/Static';
 import widgetFactory from './widgets/widgetFactory';
-import { ICoordinate, IRenderStack } from './interfaces';
+import { Coordinate, IRenderStack, MouseDownTarget, KeyboardKeysForListen,
+         NextMoveMode, ILayersActionRunner } from './interfaces';
 import RenderStack from './RenderStack';
-import { attemptMoveToSticking } from './helpers/rect';
-import { activeCanvas, staticCanvas } from './helpers/DOM';
-import { getWidgetParams } from './helpers/widget';
+import { attemptMoveToSticking } from './helpers/sticking';
+import { staticCanvas, ctxStatic, staticWidth, staticHeight, activeCanvas } from './helpers/DOM';
 import { isPrimaryBtnPressed, getArrowMovement } from './helpers/events';
+import { Static } from './layers/Static';
+import { activeLayer } from './layers/Active';
+import { convertXForStaticLayer } from './helpers/math';
 
-export default class LayersActionRunner {
+export default class LayersActionRunner implements ILayersActionRunner {
   constructor() {
     staticCanvas.addEventListener('mousedown',
                                   (e: MouseEvent) => this.handleMouseDown(e, 'canvas'));
@@ -17,95 +18,80 @@ export default class LayersActionRunner {
     });
     activeCanvas.addEventListener('mousemove', (e: MouseEvent) => this.onMouseMove(e));
     document.addEventListener('keydown', (e: KeyboardEvent) => this.onKeyboardMove(e));
-    document.addEventListener('mouseup', e => this.actionEnd());
-    document.addEventListener('keyup', e => this.actionEnd());
+    document.addEventListener('mouseup', () => this.actionEnd());
+    document.addEventListener('keyup', () => this.actionEnd());
+    this.stack = new RenderStack();
+    // tslint:disable-next-line: no-unused-expression
+    new Static(ctxStatic, staticWidth, staticHeight);
   }
 
-  stack: IRenderStack = new RenderStack();
+  stack: IRenderStack;
 
-  private handleMouseDown(e: MouseEvent, mode: ('div' | 'canvas')) {
+  private handleMouseDown(e: MouseEvent, mode: MouseDownTarget) {
     if (isPrimaryBtnPressed(e.buttons)) {
-      this.placeActiveWidgetIntoStatic();
-      activeLayer.setActiveLayerOnTop(true);
+      const isActiveLayerOnTop = true;
+      activeLayer.setLayerOnTop(isActiveLayerOnTop);
       switch (mode) {
         case 'div':
           this.createNewWidget(e);
           break;
         case 'canvas':
-          this.changeActiveWidgetIfNeeded(e);
+          this.setActiveWidgetIfNeeded(e);
           break;
       }
     }
   }
 
-  private actionEnd() {
-    activeLayer.setActiveLayerOnTop(false);
-    if (this.stack.activeIsExist()) {
-      this.deleteWidgetIfOutOfBorders();
-    }
-  }
-
-  private deleteWidgetIfOutOfBorders() {
-    const widget = this.stack.getActive();
-    if (!widget.inBorders()) {
-      this.stack.deleteWidget(widget.id);
-      activeLayer.clearCanvas();
+  private actionEnd() { // rename ????
+    const isActiveLayerOnTop = false;
+    activeLayer.setLayerOnTop(isActiveLayerOnTop);
+    if (this.stack.hasActiveWidget() && this.stack.activeWidget.isOutOfBorders()) {
+      this.stack.deleteActiveWidget();
     }
   }
 
   private onMouseMove(e: MouseEvent) {
-    if (this.stack.activeIsExist() && isPrimaryBtnPressed(e.buttons)) {
+    if (this.stack.hasActiveWidget() && isPrimaryBtnPressed(e.buttons)) {
       const { offsetX, offsetY, movementX, movementY } = e;
       const movement = { x: movementX, y: movementY };
-      const activeWidget = this.stack.getActive();
-      activeWidget.moveToGeometricCenter(offsetX, offsetY);
+      this.stack.activeWidget.moveToGeometricCenter(convertXForStaticLayer(offsetX), offsetY);
       this.makeNextStep(movement, 'mouse');
     }
   }
 
   private onKeyboardMove(e: KeyboardEvent) {
-    const movement: ICoordinate = getArrowMovement(e.key);
-    if (this.stack.activeIsExist() && movement !== undefined) {
+    const movement: Coordinate = getArrowMovement(e.key as KeyboardKeysForListen);
+    if (this.stack.hasActiveWidget() && movement !== undefined) {
       this.makeNextStep(movement, 'keyboard');
     }
   }
 
-  private makeNextStep(movement: ICoordinate, mode: ('keyboard' | 'mouse')) {
-    const widget = this.stack.getActive();
-    widget.setPosition(widget.x + movement.x, widget.y + movement.y);
+  private makeNextStep(movement: Coordinate, mode: NextMoveMode) {
+    const widget = this.stack.activeWidget;
+    widget.commitMovement(movement);
     if (widget.isSticky) {
       attemptMoveToSticking(this.stack, mode, movement);
     }
-    this.findCrossing();
   }
 
   private createNewWidget(e: MouseEvent) {
-    const params = getWidgetParams(e);
-    const widget = widgetFactory(this.stack.getStack(), params);
+    const widget = widgetFactory(this.stack.getStack(), e);
     this.stack.addWidget(widget);
   }
 
-  private changeActiveWidgetIfNeeded(e: MouseEvent) {
-    for (const el of this.stack.getStack()) {
-      if (el.coordinateIsInside(e.offsetX, e.offsetY)) {
-        this.stack.setNewActive(el);
+  private setActiveWidgetIfNeeded(e: MouseEvent) {
+    const clickCoordinate = { x: e.offsetX, y: e.offsetY };
+    for (const widget of this.stack.getStack()) {
+      if (widget.coordinateIsInside(clickCoordinate)) {
+        if (!widget.isActive) {
+          this.stack.setNewActive(widget);
+        }
         return;
       }
     }
-  }
-
-  private placeActiveWidgetIntoStatic() {
-    activeLayer.resetCanvas();
-    if (this.stack.activeIsExist()) {
+    if (this.stack.hasActiveWidget()) {
       this.stack.resetActive();
     }
-    this.findCrossing();
   }
 
-  private findCrossing() {
-    this.stack.getStack().map(el => el.setCrossing(this.stack.isCrossingWithOthers(el)));
-    activeLayer.clearCanvas();
-    staticLayer.clearCanvas();
-    this.stack.rerender();
-  }
 }

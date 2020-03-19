@@ -1,10 +1,20 @@
 import Layer from './Layer';
-import { ctxWidgets, staticHeight, staticWidth } from '../helpers/DOM';
+// import { ctxStatic, staticHeight, staticWidth } from '../helpers/DOM';
+import { subscriber } from '../Subscriber';
+import { CanvasEvents, WidgetEvents } from '../constants';
 
-class Static extends Layer {
+export class Static extends Layer {
   constructor(ctx: CanvasRenderingContext2D, width: number, height: number) {
     super(ctx, width, height);
+    subscriber.subscribe(WidgetEvents.ChangeActiveStatus, () => this.clearCanvas());
   }
+
+  protected clearCanvas() {
+    super.clearCanvas();
+    // console.warn('we clear Static');
+    subscriber.notify(CanvasEvents.StaticLayerCleared);
+  }
+
 }
 
-export const staticLayer = new Static(ctxWidgets, staticWidth, staticHeight);
+// export const staticLayer = new Static(ctxStatic, staticWidth, staticHeight);

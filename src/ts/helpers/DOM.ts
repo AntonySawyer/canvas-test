@@ -1,12 +1,12 @@
 import { widgetSamples } from '../constants';
 
 export const activeCanvas = document.getElementById('activeCanvas') as HTMLCanvasElement;
-export const ctxActiveLayer = activeCanvas.getContext('2d');
+export const ctxActive = activeCanvas.getContext('2d');
 export const activeWidth = activeCanvas.width;
 export const activeHeight = activeCanvas.height;
 
 export const staticCanvas = document.getElementById('staticCanvas') as HTMLCanvasElement;
-export const ctxWidgets = staticCanvas.getContext('2d');
+export const ctxStatic = staticCanvas.getContext('2d');
 export const staticWidth = staticCanvas.width;
 export const staticHeight = staticCanvas.height;
 
@@ -18,13 +18,13 @@ export function generateSidebar() { // FIX ME
   const stickyContainer = document.createElement('div');
   stickyContainer.classList.add('widgetsContainer', 'sticky');
 
-  widgetSamples.forEach((widget) => {
-    container.innerHTML += `<div class="widgetSample" data-id="${widget.id.toString()}" data-type="${widget.type}">
-                              <span class="widgetSampleDescr">${widget.id}0mm</span>
+  widgetSamples.forEach((sample) => {
+    container.innerHTML += `<div class="widgetSample" data-id="${sample.id.toString()}" data-type="${sample.type}" data-sticky="false">
+                              <span class="widgetSampleDescr">${sample.id}0mm</span>
                               <span class="widgetSampleIcon">☰</span>
                             </div>`;
-    stickyContainer.innerHTML += `<div class="widgetSample stickyWidget" data-id="${widget.id.toString()}" data-type="${widget.type}">
-                            <span class="widgetSampleDescr">${widget.width}x${widget.height}</span>
+    stickyContainer.innerHTML += `<div class="widgetSample stickyWidget" data-id="${sample.id.toString()}" data-type="${sample.type}" data-sticky="true">
+                            <span class="widgetSampleDescr">${sample.width}x${sample.height}</span>
                             <span class="widgetSampleIcon">☰</span>
                           </div>`;
   });

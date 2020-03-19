@@ -1,14 +1,18 @@
-export function someSideInLimit(firstPair: number[], secondPair: number[], lim: number) {
-  return inLimit(firstPair[0], secondPair[0], lim)
-      || inLimit(firstPair[0], secondPair[1], lim)
-      || inLimit(firstPair[1], secondPair[0], lim)
-      || inLimit(firstPair[1], secondPair[1], lim);
-}
+import { stickyLimit } from '../constants';
+import { sidebarWidth } from './DOM';
 
-function inLimit(a: number, b: number, lim: number) {
-  return Math.abs(a - lim) < b && (a + lim) > b;
+// rename
+export function somePointInRangeWithLimit(controlPoints: number[], // into axisPoints ?
+                                          pointsToCheck: number[]) {
+  return someInRange(controlPoints[0] - stickyLimit, controlPoints[0] + stickyLimit, pointsToCheck)
+      || someInRange(controlPoints[1] - stickyLimit, controlPoints[1] + stickyLimit, pointsToCheck);
 }
 
 export const someInRange = (first: number, last: number, arrToCheck: number[]) => {
-  return arrToCheck.some(el => first <= el && el <= last);
+// numbToCheck?
+  return arrToCheck.some(numbToCheck => first <= numbToCheck && numbToCheck <= last);
 };
+
+export function convertXForStaticLayer(x: number) {
+  return x - sidebarWidth;
+}
