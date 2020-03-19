@@ -4,7 +4,7 @@ import './alertbar.css';
 export default class Alertbar extends React.Component<{}, {}> {
   render() {
     return (
-      <section>
+      <section className="alertBar">
         <h3>Alerts here</h3>
       </section>
     );

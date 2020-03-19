@@ -75,10 +75,10 @@ export interface ICrossingService {
 
 export interface ILayersActionRunner {
   stack: IRenderStack;
+  handleMouseDown: (e: MouseEvent, mode: MouseDownTarget) => void;
 }
 
-// React
-export interface WidgetSampleProps {
+interface WidgetSample {
   id: number;
   type: string; // fix me: widgetTypes
   width: number;
@@ -87,10 +87,18 @@ export interface WidgetSampleProps {
   scared: boolean;
 }
 
+// React
+export interface WidgetSampleProps {
+  sample: WidgetSample;
+  handleClickOnWidgetSample: (e: MouseEvent, mode: MouseDownTarget) => void;
+}
+
 export interface WidgetSamplesGroupProps {
-  samples: WidgetSampleProps[];
+  samples: WidgetSample[];
+  handleClickOnWidgetSample: (e: MouseEvent, mode: MouseDownTarget) => void;
 }
 
 export interface SidebarProps {
-  widgetSamples: WidgetSampleProps[][];
+  widgetSamples: WidgetSample[][];
+  handleClickOnWidgetSample: (e: MouseEvent, mode: MouseDownTarget) => void;
 }

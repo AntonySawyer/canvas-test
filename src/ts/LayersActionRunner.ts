@@ -13,9 +13,6 @@ export default class LayersActionRunner implements ILayersActionRunner { // rena
   constructor() {
     staticCanvas.addEventListener('mousedown',
                                   (e: MouseEvent) => this.handleMouseDown(e, 'canvas'));
-    document.querySelectorAll('.widgetSample').forEach((el) => {
-      el.addEventListener('mousedown', (e: MouseEvent) => this.handleMouseDown(e, 'div'));
-    });
     activeCanvas.addEventListener('mousemove', (e: MouseEvent) => this.onMouseMove(e));
     document.addEventListener('keydown', (e: KeyboardEvent) => this.onKeyboardMove(e));
     document.addEventListener('mouseup', () => this.actionEnd());
@@ -23,11 +20,13 @@ export default class LayersActionRunner implements ILayersActionRunner { // rena
     this.stack = new RenderStack();
     // tslint:disable-next-line: no-unused-expression
     new Static(ctxStatic, staticWidth, staticHeight);
+
+    this.handleMouseDown = this.handleMouseDown.bind(this);
   }
 
   stack: IRenderStack;
 
-  private handleMouseDown(e: MouseEvent, mode: MouseDownTarget) {
+  handleMouseDown(e: MouseEvent, mode: MouseDownTarget) {
     if (isPrimaryBtnPressed(e.buttons)) {
       const isActiveLayerOnTop = true;
       activeLayer.setLayerOnTop(isActiveLayerOnTop);

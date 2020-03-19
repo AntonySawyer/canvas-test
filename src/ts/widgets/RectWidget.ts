@@ -1,6 +1,5 @@
 import Widget from './Widget';
 import { IWidget, Coordinate, Size } from '../interfaces';
-import { stickyLimit } from '../constants';
 import { staticCanvas } from '../helpers/DOM';
 
 export default class RectWidget extends Widget implements IWidget {
@@ -20,16 +19,6 @@ export default class RectWidget extends Widget implements IWidget {
     ctx.fillRect(x, this.y, this.width, this.height);
     ctx.lineWidth = 0.5;
     ctx.strokeRect(x, this.y, this.width, this.height);
-    // temp border
-    if (this.isSticky && this.isActive) {
-      ctx.lineWidth = 0.5;
-      const stickyArea = { ...this,
-        x: x  - stickyLimit,
-        y: this.y - stickyLimit,
-        width: this.width + stickyLimit * 2,
-        height: this.height + stickyLimit * 2 };
-      ctx.strokeRect(stickyArea.x, stickyArea.y, stickyArea.width, stickyArea.height);
-    }
   }
 
 // выглядит как не особо нужная дичь, которую можно вынести отсюда, как минимум на верхний уровень

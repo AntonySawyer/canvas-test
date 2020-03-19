@@ -3,6 +3,7 @@ body {
 }
 
 .wrapper {
+    justify-content: space-between;
     display: flex;
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none;   /* Chrome/Safari/Opera */
@@ -19,11 +20,20 @@ canvas {
 #activeCanvas {
     position: absolute;
     pointer-events: none;
+    top: 49px;
+    left: 8px;
 }
 
 .sidebarWrapper,
 #staticCanvas {
     border-right: none;
+}
+
+#staticCanvas {
+    position: absolute;
+    top: 49px;
+    left: 359px;
+    z-index: 1;
 }
 
 select {

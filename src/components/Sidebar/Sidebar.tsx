@@ -9,7 +9,9 @@ export default class Sidebar extends React.Component<SidebarProps, {}> {
       <section className="sidebarWrapper">
         {/* FIX ME: index as key */ }
           {this.props.widgetSamples.map((samples, index) => {
-            return <WidgetSamplesGroup key={index} samples={samples} />;
+            return <WidgetSamplesGroup key={index}
+                      samples={samples}
+                      handleClickOnWidgetSample={this.props.handleClickOnWidgetSample} />;
           })}
       </section>
     );

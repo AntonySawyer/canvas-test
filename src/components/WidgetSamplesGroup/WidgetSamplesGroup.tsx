@@ -9,7 +9,10 @@ export default class WidgetSamplesGroup extends React.Component<WidgetSamplesGro
       <section className="widgetsContainer">
         <h3>Widgets container</h3>
         {/* FIX ME: index as key */ }
-          {this.props.samples.map((sample, index) => <WidgetSample key={index} {...sample} />)}
+          {this.props.samples.map((sample, index) => {
+            return <WidgetSample key={index} sample={sample}
+              handleClickOnWidgetSample={this.props.handleClickOnWidgetSample} />;
+          })}
       </section>
     );
   }
