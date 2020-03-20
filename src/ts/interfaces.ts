@@ -44,7 +44,9 @@ export interface IWidget extends IAxisPoint {
   isActive: boolean;
   crossingPair: number[];
   setActive: (isActive: boolean) => void;
-  setCrossing: (isCrossing: boolean, crossingIds: number[]) => void;
+  setCrossing: (isCrossing: boolean) => void;
+  addCrossingPair: (crossingId: number) => void;
+  removeCrossingPair: (crossingId: number) => void;
   draw: () => void;
   moveToGeometricCenter: (xEvent: number, yEvent: number) => void;
   isOutOfBorders: () => boolean;
@@ -66,8 +68,9 @@ export interface IRenderStack {
   getStack: () => IWidget[];
   resetActive: () => void;
   getStackWithoutId: (id: number) => IWidget[];
+  getWidgetById: (id: number) => IWidget;
   getOnlySticky: () => IWidget[];
-  getOnlyCrossing: () => IWidget[];
+  getOnlyCrossing: () => number[][];
   hasActiveWidget: () => boolean;
 }
 

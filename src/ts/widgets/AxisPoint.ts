@@ -37,7 +37,7 @@ abstract class AxisPoint implements IAxisPoint {
 
   getPoints2() { // widget
     const points = this.getPoints();
-    return [ points.first, { x: points.first.x, y: points.last.y }, { x: points.last.x, y: points.first.y}, points.last ]
+    return [points.first, { x: points.first.x, y: points.last.y }, { x: points.last.x, y: points.first.y }, points.last];
 
   }
 

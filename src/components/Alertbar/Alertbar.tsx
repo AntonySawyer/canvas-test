@@ -1,10 +1,9 @@
 import * as React from 'react';
 import './alertbar.css';
-import { IWidget } from 'src/ts/interfaces';
 import Alert from '../Alert';
 
 interface AlertbarProps {
-  crossingList: IWidget[];
+  crossingList: number[][];
 }
 
 export default class Alertbar extends React.Component<AlertbarProps, {}> {
@@ -13,11 +12,9 @@ export default class Alertbar extends React.Component<AlertbarProps, {}> {
       <section className="alertBar">
         <h3>Alerts here</h3>
         <ul>
-          {this.props.crossingList.map((widget) => {
-            return widget.crossingPair.map((target) => {
-              return <Alert key={`${widget.id}${target}`} widgetId={widget.id}
-                            targetId={target} />;
-            });
+          {this.props.crossingList.map((pair) => {
+            return <Alert key={`${pair[0]}${pair[1]}`} widgetId={pair[0]}
+                          targetId={pair[1]} />;
           })}
         </ul>
       </section>

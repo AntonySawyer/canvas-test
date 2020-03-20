@@ -2,8 +2,8 @@ import * as React from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Alertbar from './Alertbar';
-import { widgetSamplesForReact, CanvasEvents, StackEvents, WidgetEvents } from '../ts/constants';
-import { IRenderStack, MouseDownTarget, IWidget } from 'src/ts/interfaces';
+import { widgetSamplesForReact, CanvasEvents, WidgetEvents } from '../ts/constants';
+import { IRenderStack, MouseDownTarget } from 'src/ts/interfaces';
 import { subscriber } from '../ts/Subscriber';
 
 interface AppProps {
@@ -13,7 +13,7 @@ interface AppProps {
 
 interface AppState {
   widgetCount: number;
-  crossingList: IWidget[];
+  crossingList: number[][];
 }
 
 export class App extends React.Component<AppProps, AppState> {
@@ -26,7 +26,7 @@ export class App extends React.Component<AppProps, AppState> {
     this.updateWidgetCounter = this.updateWidgetCounter.bind(this);
     this.updateAlertWidgets = this.updateAlertWidgets.bind(this);
     subscriber.subscribe(CanvasEvents.StaticLayerCleared, this.updateWidgetCounter);
-    subscriber.subscribe(StackEvents.ActiveWidgetRemoved, this.updateWidgetCounter);
+    // subscriber.subscribe(StackEvents.ActiveWidgetRemoved, this.updateWidgetCounter);
     subscriber.subscribe(WidgetEvents.ChangeCrossingStatus, this.updateAlertWidgets);
   }
 

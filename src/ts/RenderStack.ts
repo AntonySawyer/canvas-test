@@ -25,11 +25,29 @@ export default class RenderStack  implements IRenderStack {
     subscriber.notify(StackEvents.ActiveWidgetRemoved);
   }
 
-  getOnlyCrossing = () => this.stack.filter(widget => widget.isCrossing);
+  getOnlyCrossing = () => { // переименовать или возвращать только массив
+    const crossingWidgets = this.stack.filter(widget => widget.isCrossing);
+    return this.getPairs(crossingWidgets);
+  }
+
+  getPairs = (crossingWidgets: IWidget[]) => { // переместить
+    const result: number[][] = [];
+    crossingWidgets.forEach((widget) => {
+      widget.crossingPair.forEach((id) => {
+        if (result.every(pair => pair[0] !== widget.id && pair[1] !== id)) {
+          result.push([widget.id, id].sort());
+        }
+      });
+    });
+    const joined = result.map(pair => pair.join());
+    return Array.from(new Set(joined)).map(str => str.split(',').map(i => +i));
+  }
 
   getStack = () => this.stack;
 
   getStackWithoutId = (id: number) => this.stack.filter(widget => widget.id !== id);
+
+  getWidgetById = (id: number) => this.stack.filter(widget => widget.id === id)[0];
 
   getOnlySticky = () => this.stack.filter(widget => widget.isSticky);
 
@@ -57,6 +75,13 @@ export default class RenderStack  implements IRenderStack {
   private deleteWidget(id: number) {
     const index = this.stack.findIndex(widget => widget.id === id);
     this.stack.splice(index, 1);
+    this.stack
+    .filter(widget => widget.isCrossing)
+    .forEach((widget) => {
+      if (widget.crossingPair.includes(id)) {
+        widget.removeCrossingPair(id);
+      }
+    });
   }
 
   private getActive = () => this.stack.filter(widget => widget.isActive)[0];

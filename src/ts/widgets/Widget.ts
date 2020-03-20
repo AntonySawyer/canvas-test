@@ -31,13 +31,27 @@ export default abstract class Widget extends AxisPoint implements IWidget {
     subscriber.notify(WidgetEvents.ChangeActiveStatus);
   }
 
-  setCrossing = (isCrossing: boolean, pair: number[]) => {
+  setCrossing = (isCrossing: boolean) => {
     this.isCrossing = isCrossing;
-    this.crossingPair.length = 0;
-    this.crossingPair.push(...pair);
-    console.log(this);
     this.setCorrectColorProperty();
     subscriber.notify(WidgetEvents.ChangeCrossingStatus);
+  }
+
+  addCrossingPair = (crossingId: number) => {
+    if (!this.crossingPair.includes(crossingId)) {
+      this.crossingPair.push(crossingId);
+    }
+    if (!this.isCrossing) {
+      this.setCrossing(true);
+    }
+  }
+
+  removeCrossingPair = (crossingId: number) => {
+    const index = this.crossingPair.findIndex(id => id === crossingId);
+    this.crossingPair.splice(index, 1);
+    if (this.crossingPair.length === 0) {
+      this.setCrossing(false);
+    }
   }
 
   protected getTargetLayer = () => {
