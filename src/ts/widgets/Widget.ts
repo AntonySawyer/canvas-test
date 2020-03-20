@@ -19,6 +19,7 @@ export default abstract class Widget extends AxisPoint implements IWidget {
   color: WidgetColor = WidgetColor.active;
   isActive: boolean;
   isCrossing: boolean = false;
+  crossingPair: number[] = [];
 
   abstract draw(): void;
   abstract moveToGeometricCenter(xEvent: number, yEvent: number): void;
@@ -30,9 +31,13 @@ export default abstract class Widget extends AxisPoint implements IWidget {
     subscriber.notify(WidgetEvents.ChangeActiveStatus);
   }
 
-  setCrossing = (isCrossing: boolean) => {
+  setCrossing = (isCrossing: boolean, pair: number[]) => {
     this.isCrossing = isCrossing;
+    this.crossingPair.length = 0;
+    this.crossingPair.push(...pair);
+    console.log(this);
     this.setCorrectColorProperty();
+    subscriber.notify(WidgetEvents.ChangeCrossingStatus);
   }
 
   protected getTargetLayer = () => {

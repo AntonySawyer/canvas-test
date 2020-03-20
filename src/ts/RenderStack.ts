@@ -25,6 +25,8 @@ export default class RenderStack  implements IRenderStack {
     subscriber.notify(StackEvents.ActiveWidgetRemoved);
   }
 
+  getOnlyCrossing = () => this.stack.filter(widget => widget.isCrossing);
+
   getStack = () => this.stack;
 
   getStackWithoutId = (id: number) => this.stack.filter(widget => widget.id !== id);
