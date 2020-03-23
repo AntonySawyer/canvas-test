@@ -1,14 +1,11 @@
 const path = require('path');
 
 module.exports = {
-  entry: {
-    canvas: './src/ts/app.ts',
-    react: './src/index.tsx'
-  },
+  entry: './src/ts/app.ts',
   module: {
     rules: [
       {
-        test: /\.ts(x?)$/,
+        test: /\.ts?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
       },
@@ -18,10 +15,10 @@ module.exports = {
     contentBase: './',
   },
   resolve: {
-    extensions: ['.ts', '.tsx', ".js", ".jsx"],
+    extensions: ['.ts', '.js'],
   },
   output: {
-    filename: '[name].app.js',
+    filename: 'app.js',
     path: path.resolve(__dirname, 'dist'),
   },
 };
