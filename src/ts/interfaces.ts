@@ -43,11 +43,14 @@ export interface IWidget extends IAxisPoint {
   isCrossing: boolean;
   isActive: boolean;
   crossingPair: number[];
+  isHighlightBorders: boolean;
   setActive: (isActive: boolean) => void;
   setCrossing: (isCrossing: boolean) => void;
   addCrossingPair: (crossingId: number) => void;
   removeCrossingPair: (crossingId: number) => void;
+  setHighlightBorders: (isHighlightBorders: boolean) => void;
   draw: () => void;
+  drawBorder: (x: number, ctx: CanvasRenderingContext2D) => void;
   moveToGeometricCenter: (xEvent: number, yEvent: number) => void;
   isOutOfBorders: () => boolean;
 }
@@ -72,6 +75,8 @@ export interface IRenderStack {
   getOnlySticky: () => IWidget[];
   getOnlyCrossing: () => number[][];
   hasActiveWidget: () => boolean;
+  setHighlightBordersByIds: (ids: number[]) => void;
+  resetHighLightBorders: () => void;
 }
 
 export interface ICrossingService {

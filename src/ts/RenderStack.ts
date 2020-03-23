@@ -1,12 +1,13 @@
 import { IRenderStack, IWidget } from './interfaces';
 import { subscriber } from './Subscriber';
-import { StackEvents, CanvasEvents } from './constants';
+import { StackEvents, CanvasEvents, WidgetEvents } from './constants';
 
 export default class RenderStack  implements IRenderStack {
   constructor() {
     this.stack = [];
     subscriber.subscribe(CanvasEvents.ActiveLayerCleared, this.renderActiveWidget);
     subscriber.subscribe(CanvasEvents.StaticLayerCleared, this.renderStaticWidgets);
+    subscriber.subscribe(WidgetEvents.SetNewPosition, this.resetHighLightBorders);
   }
 
   private stack: IWidget[];
@@ -41,6 +42,20 @@ export default class RenderStack  implements IRenderStack {
     });
     const joined = result.map(pair => pair.join());
     return Array.from(new Set(joined)).map(str => str.split(',').map(i => +i));
+  }
+
+  setHighlightBordersByIds = (ids: number[]) => {
+    this.resetHighLightBorders();
+    ids.forEach((id) => {
+      const widget = this.getWidgetById(id);
+      widget.setHighlightBorders(true);
+    });
+    subscriber.notify(StackEvents.BorderHightlight);
+  }
+
+  resetHighLightBorders = () => {
+    this.stack.filter(widget => widget.isHighlightBorders)
+              .forEach(widget => widget.setHighlightBorders(false));
   }
 
   getStack = () => this.stack;

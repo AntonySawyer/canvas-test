@@ -10,10 +10,10 @@ class Active extends Layer {
     subscriber.subscribe(StackEvents.ActiveWidgetRemoved, () => this.clearCanvas());
     subscriber.subscribe(WidgetEvents.ChangeActiveStatus, () => this.clearCanvas());
     subscriber.subscribe(WidgetEvents.SetNewPosition, () => this.clearCanvas());
+    subscriber.subscribe(StackEvents.BorderHightlight, () => this.clearCanvas());
   }
 
   protected clearCanvas = () => {
-    // console.warn('we clear Active');
     super.clearCanvas();
     subscriber.notify(CanvasEvents.ActiveLayerCleared);
   }

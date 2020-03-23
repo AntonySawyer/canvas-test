@@ -24,6 +24,16 @@ export enum WidgetColor {
   nonSticky = '#cebf64',
 }
 
+export enum BorderWidth {
+  hidghlighted = 3,
+  default = 0.5,
+}
+
+export enum BorderColor {
+  hidghlighted = 'red',
+  default = 'black',
+}
+
 export enum CanvasEvents {
   StaticLayerCleared = 'StaticLayerCleared',
   ActiveLayerCleared = 'ActiveLayerCleared',
@@ -31,6 +41,7 @@ export enum CanvasEvents {
 
 export enum StackEvents {
   ActiveWidgetRemoved = 'ActiveWidgetRemoved',
+  BorderHightlight = 'BorderHightlight',
 }
 
 export enum WidgetEvents {

@@ -4,6 +4,7 @@ import Alert from '../Alert';
 
 interface AlertbarProps {
   crossingList: number[][];
+  setHighlightBordersByIds: (ids: number[]) => void;
 }
 
 export default class Alertbar extends React.Component<AlertbarProps, {}> {
@@ -14,7 +15,8 @@ export default class Alertbar extends React.Component<AlertbarProps, {}> {
         <ul>
           {this.props.crossingList.map((pair) => {
             return <Alert key={`${pair[0]}${pair[1]}`} widgetId={pair[0]}
-                          targetId={pair[1]} />;
+                          targetId={pair[1]}
+                          setHighlightBordersByIds={this.props.setHighlightBordersByIds} />;
           })}
         </ul>
       </section>

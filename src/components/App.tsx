@@ -47,7 +47,8 @@ export class App extends React.Component<AppProps, AppState> {
         <section className="wrapper">
           <Sidebar widgetSamples={widgetSamplesForReact}
             handleClickOnWidgetSample={this.props.handleClickOnWidgetSample} />
-          <Alertbar crossingList={this.state.crossingList} />
+          <Alertbar crossingList={this.state.crossingList}
+          setHighlightBordersByIds={this.props.stack.setHighlightBordersByIds} />
         </section>
       </>
     );

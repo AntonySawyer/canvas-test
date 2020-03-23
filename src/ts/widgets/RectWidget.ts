@@ -1,6 +1,7 @@
 import Widget from './Widget';
 import { IWidget, Coordinate, Size } from '../interfaces';
 import { staticCanvas } from '../helpers/DOM';
+import { BorderWidth, BorderColor } from '../constants';
 
 export default class RectWidget extends Widget implements IWidget {
   constructor(id: number, coordinate: Coordinate, isSticky: boolean, color: string, sizes: Size) {
@@ -17,7 +18,12 @@ export default class RectWidget extends Widget implements IWidget {
     const x = this.isActive ? this.getXForActiveLayer() : this.x;
     ctx.fillStyle = this.color;
     ctx.fillRect(x, this.y, this.width, this.height);
-    ctx.lineWidth = 0.5;
+    this.drawBorder(x, ctx);
+  }
+
+  drawBorder(x: number, ctx: CanvasRenderingContext2D) {
+    ctx.lineWidth = this.isHighlightBorders ? BorderWidth.hidghlighted : BorderWidth.default;
+    ctx.strokeStyle = this.isHighlightBorders ? BorderColor.hidghlighted : BorderColor.default;
     ctx.strokeRect(x, this.y, this.width, this.height);
   }
 

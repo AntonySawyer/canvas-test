@@ -20,10 +20,12 @@ export default abstract class Widget extends AxisPoint implements IWidget {
   isActive: boolean;
   isCrossing: boolean = false;
   crossingPair: number[] = [];
+  isHighlightBorders: boolean = false;
 
   abstract draw(): void;
   abstract moveToGeometricCenter(xEvent: number, yEvent: number): void;
   abstract isOutOfBorders(): boolean;
+  abstract drawBorder(x, ctx): void;
 
   setActive = (isActive: boolean) => {
     this.isActive = isActive;
@@ -52,6 +54,10 @@ export default abstract class Widget extends AxisPoint implements IWidget {
     if (this.crossingPair.length === 0) {
       this.setCrossing(false);
     }
+  }
+
+  setHighlightBorders = (isHighlightBorders: boolean) => {
+    this.isHighlightBorders = isHighlightBorders;
   }
 
   protected getTargetLayer = () => {
