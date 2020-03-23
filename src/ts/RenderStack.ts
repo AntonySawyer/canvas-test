@@ -8,6 +8,7 @@ export default class RenderStack  implements IRenderStack {
     subscriber.subscribe(CanvasEvents.ActiveLayerCleared, this.renderActiveWidget);
     subscriber.subscribe(CanvasEvents.StaticLayerCleared, this.renderStaticWidgets);
     subscriber.subscribe(WidgetEvents.SetNewPosition, this.resetHighLightBorders);
+    subscriber.subscribe(WidgetEvents.ChangeActiveStatus, this.resetHighLightBorders);
   }
 
   private stack: IWidget[];
@@ -45,6 +46,9 @@ export default class RenderStack  implements IRenderStack {
   }
 
   setHighlightBordersByIds = (ids: number[]) => {
+    if (this.hasActiveWidget()) {
+      this.resetActive();
+    }
     this.resetHighLightBorders();
     ids.forEach((id) => {
       const widget = this.getWidgetById(id);
@@ -72,6 +76,7 @@ export default class RenderStack  implements IRenderStack {
     if (this.hasActiveWidget()) {
       this.resetActive();
     }
+    widget.setHighlightBorders(false);
     widget.setActive(true);
   }
 

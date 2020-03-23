@@ -7,7 +7,11 @@ interface AlertProps {
   setHighlightBordersByIds: (ids: number[]) => void;
 }
 
-export default class Alert extends React.Component<AlertProps, {}> {
+interface AlertState {
+  isActive: boolean;
+}
+
+export default class Alert extends React.Component<AlertProps, AlertState> {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
