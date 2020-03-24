@@ -42,6 +42,7 @@ export enum CanvasEvents {
 export enum StackEvents {
   ActiveWidgetRemoved = 'ActiveWidgetRemoved',
   BorderHightlight = 'BorderHightlight',
+  InitStackFromStorage = 'InitStackFromStorage',
 }
 
 export enum WidgetEvents {

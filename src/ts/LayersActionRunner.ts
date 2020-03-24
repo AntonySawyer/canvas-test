@@ -1,4 +1,4 @@
-import widgetFactory from './widgets/widgetFactory';
+import { widgetFactory, collectParamsFromEvent } from './widgets/widgetFactory';
 import { Coordinate, IRenderStack, MouseDownTarget, KeyboardKeysForListen,
          NextMoveMode, ILayersActionRunner } from './interfaces';
 import RenderStack from './RenderStack';
@@ -74,7 +74,8 @@ export default class LayersActionRunner implements ILayersActionRunner { // rena
   }
 
   private createNewWidget(e: MouseEvent) {
-    const widget = widgetFactory(this.stack.getStack(), e);
+    const params = collectParamsFromEvent(this.stack.getStack(), e);
+    const widget = widgetFactory(params);
     this.stack.addWidget(widget);
   }
 

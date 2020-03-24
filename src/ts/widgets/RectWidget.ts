@@ -1,12 +1,12 @@
 import Widget from './Widget';
-import { IWidget, Coordinate, Size } from '../interfaces';
+import { IWidget, Coordinate, Size, WidgetTypes } from '../interfaces';
 import { staticCanvas } from '../helpers/DOM';
 import { BorderWidth, BorderColor } from '../constants';
 
 export default class RectWidget extends Widget implements IWidget {
   constructor(id: number, coordinate: Coordinate, isSticky: boolean,
-              isRepulsive: boolean, color: string, sizes: Size) {
-    super(id, coordinate, isSticky, isRepulsive, color);
+              isRepulsive: boolean, color: string, sizes: Size, type: WidgetTypes) {
+    super(id, coordinate, isSticky, isRepulsive, color, type);
     this.width = sizes.width;
     this.height = sizes.height;
   }

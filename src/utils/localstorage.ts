@@ -9,6 +9,7 @@ export function serializeStack(stack: IWidget[]) {
     serialized += `${widget.width}&`;
     serialized += `${widget.height}&`;
     serialized += `${widget.defaultColor}&`;
+    serialized += `${widget.type}&`;
     serialized += `${widget.isSticky}&`;
     serialized += `${widget.isRepulsive}`;
     if (index + 1 !== stack.length) {
@@ -24,14 +25,19 @@ export function deserializeStack(serialized: string) {
             .forEach((widgetInfo) => {
               const fields = widgetInfo.split('&');
               const widget = {
-                id: fields[0],
-                x: fields[1],
-                y: fields[2],
-                width: fields[3],
-                height: fields[4],
-                defaultColor: fields[5],
-                isSticky: fields[6] === 'true',
-                isRepulsive: fields[6] === 'true',
+                id: +fields[0],
+                coordinate: {
+                  x: +fields[1],
+                  y: +fields[2],
+                },
+                size: {
+                  width: +fields[3],
+                  height: +fields[4],
+                },
+                color: fields[5],
+                type: fields[6],
+                isSticky: fields[7] === 'true',
+                isRepulsive: fields[8] === 'true',
               };
               stack.push(widget);
             });

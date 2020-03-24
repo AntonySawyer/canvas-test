@@ -40,8 +40,8 @@ export class App extends React.Component<AppProps, AppState> {
 
   loadStack(name: string) {
     const serializedStack = localStorage.getItem(name);
-    const stack = deserializeStack(serializedStack);
-    console.log(stack);
+    const stackParams = deserializeStack(serializedStack);
+    this.props.stack.initStackFromStorage(stackParams);
   }
 
   updateWidgetCounter() {

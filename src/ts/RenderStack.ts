@@ -1,6 +1,7 @@
 import { IRenderStack, IWidget } from './interfaces';
 import { subscriber } from './Subscriber';
 import { StackEvents, CanvasEvents, WidgetEvents } from './constants';
+import { widgetFactory } from './widgets/widgetFactory';
 
 export default class RenderStack  implements IRenderStack {
   constructor() {
@@ -15,6 +16,16 @@ export default class RenderStack  implements IRenderStack {
 
   get activeWidget(): IWidget {
     return this.getActive();
+  }
+
+  initStackFromStorage = (stackParams: IWidget[]) => {
+    this.stack.length = 0;
+    stackParams.forEach((widgetParams) => {
+      const widget = widgetFactory(widgetParams);
+      this.addWidget(widget);
+      subscriber.notify(StackEvents.InitStackFromStorage);
+      this.resetActive();
+    });
   }
 
   addWidget = (widget: IWidget) => {

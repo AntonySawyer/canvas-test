@@ -1,4 +1,4 @@
-import { IWidget, Coordinate } from '../interfaces';
+import { IWidget, Coordinate, WidgetTypes } from '../interfaces';
 import { activeCanvas, staticCanvas } from '../helpers/DOM';
 import { WidgetColor, WidgetEvents } from '../constants';
 import { subscriber } from '../Subscriber';
@@ -6,9 +6,10 @@ import AxisPoint from './AxisPoint';
 
 export default abstract class Widget extends AxisPoint implements IWidget {
   constructor(id: number, coordinate: Coordinate, isSticky: boolean,
-              isRepulsive: boolean, color: string) {
+              isRepulsive: boolean, color: string, type: WidgetTypes) {
     super(coordinate.x, coordinate.y);
     this.id = id;
+    this.type = type;
     this.isSticky = isSticky;
     this.isRepulsive = isRepulsive;
     this.defaultColor = color as WidgetColor;
@@ -20,6 +21,7 @@ export default abstract class Widget extends AxisPoint implements IWidget {
   isRepulsive: boolean;
   defaultColor: WidgetColor;
   color: WidgetColor = WidgetColor.active;
+  type: WidgetTypes;
   isActive: boolean;
   isCrossing: boolean = false;
   crossingPair: number[] = [];

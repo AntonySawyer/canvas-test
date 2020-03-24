@@ -2,11 +2,12 @@ import { ICrossingService, Points } from './interfaces';
 import { someInRange } from './helpers/math';
 import { actionRunner } from './app';
 import { subscriber } from './Subscriber';
-import { WidgetEvents } from './constants';
+import { WidgetEvents, StackEvents } from './constants';
 
 class CrossingService implements ICrossingService {
   constructor() {
     subscriber.subscribe(WidgetEvents.SetNewPosition, this.setCrossingIfNeeded);
+    subscriber.subscribe(StackEvents.InitStackFromStorage, this.setCrossingIfNeeded);
   }
 
   setCrossingIfNeeded = () => {

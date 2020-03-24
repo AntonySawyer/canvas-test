@@ -39,6 +39,7 @@ export interface IWidget extends IAxisPoint {
   readonly isRepulsive: boolean;
   readonly width?: number;
   readonly height?: number;
+  readonly type: WidgetTypes;
   color: string;
   defaultColor: string;
   isCrossing: boolean;
@@ -58,6 +59,7 @@ export interface IWidget extends IAxisPoint {
 
 export interface IRenderStack {
   activeWidget: IWidget;
+  initStackFromStorage: (stackParams) => void;
   addWidget: (widget: IWidget) => void;
   deleteActiveWidget: () => void;
   setNewActive: (widget: IWidget) => void;
