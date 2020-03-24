@@ -47,7 +47,7 @@ export enum StackEvents {
 export enum WidgetEvents {
   SetNewPosition = 'SetNewPosition',
   ChangeActiveStatus = 'ChangeActiveStatus',
-  ChangeCrossingStatus = 'ChangeCrossingStatus',
+  ChangeCrossingPair = 'ChangeCrossingPair',
 }
 
 export const widgetSamples = [

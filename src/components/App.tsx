@@ -27,7 +27,7 @@ export class App extends React.Component<AppProps, AppState> {
     this.updateAlertWidgets = this.updateAlertWidgets.bind(this);
     subscriber.subscribe(CanvasEvents.StaticLayerCleared, this.updateWidgetCounter);
     // subscriber.subscribe(StackEvents.ActiveWidgetRemoved, this.updateWidgetCounter);
-    subscriber.subscribe(WidgetEvents.ChangeCrossingStatus, this.updateAlertWidgets);
+    subscriber.subscribe(WidgetEvents.ChangeCrossingPair, this.updateAlertWidgets);
   }
 
   updateWidgetCounter() {

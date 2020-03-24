@@ -7,7 +7,6 @@ import { WidgetEvents } from './constants';
 class CrossingService implements ICrossingService {
   constructor() {
     subscriber.subscribe(WidgetEvents.SetNewPosition, this.setCrossingIfNeeded);
-    // subscriber.subscribe(StackEvents.ActiveWidgetRemoved, this.setCrossingIfNeeded);
   }
 
   setCrossingIfNeeded = () => {

@@ -36,12 +36,12 @@ export default abstract class Widget extends AxisPoint implements IWidget {
   setCrossing = (isCrossing: boolean) => {
     this.isCrossing = isCrossing;
     this.setCorrectColorProperty();
-    subscriber.notify(WidgetEvents.ChangeCrossingStatus);
   }
 
   addCrossingPair = (crossingId: number) => {
     if (!this.crossingPair.includes(crossingId)) {
       this.crossingPair.push(crossingId);
+      subscriber.notify(WidgetEvents.ChangeCrossingPair);
     }
     if (!this.isCrossing) {
       this.setCrossing(true);
@@ -49,6 +49,7 @@ export default abstract class Widget extends AxisPoint implements IWidget {
   }
 
   removeCrossingPair = (crossingId: number) => {
+    subscriber.notify(WidgetEvents.ChangeCrossingPair);
     const index = this.crossingPair.findIndex(id => id === crossingId);
     this.crossingPair.splice(index, 1);
     if (this.crossingPair.length === 0) {
