@@ -1,9 +1,9 @@
 import RectWidget from './RectWidget';
-import { IWidget, Size, WidgetTypes } from '../interfaces';
+import { IWidget, Size, WidgetTypes, IWidgetParams } from '../interfaces';
 import { widgetSamples, WidgetColor } from '../constants';
 import { convertXForStaticLayer } from '../helpers/math';
 
-export function widgetFactory(params) {
+export function widgetFactory(params: IWidgetParams) {
   const { id, coordinate, size, color, type, isSticky, isRepulsive } = params;
   let widget: IWidget;
   switch (type) {

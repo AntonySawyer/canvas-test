@@ -3,3 +3,31 @@ header {
     justify-content: space-between;
     padding: 10px;
 }
+
+.backup {
+    margin: 0 15px;
+}
+
+.backup > input {
+    font-size: 18px;
+    border: 2px solid #4CAF50; /* Green */
+    outline: none;
+}
+
+.backup > input[type="text"] {
+    padding-left: 15px;
+}
+
+.backup > input[type="button"] {
+    margin-left: 5px;
+    background-color: white;
+    color: black;
+    border-radius: 6px;
+    transition-duration: 0.4s;
+}
+
+.backup > input[type="button"]:hover {
+    cursor: pointer;
+    background-color: #4CAF50; /* Green */
+    color: white;
+  }

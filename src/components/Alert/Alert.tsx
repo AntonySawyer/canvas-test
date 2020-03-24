@@ -29,7 +29,7 @@ export default class Alert extends React.Component<AlertProps, {}> {
     }
     return (
       <li className={className}
-          onClick={this.handleClick}>Widget#{widgetId} is crossing with widget #{targetId}!</li>
+          onClick={this.handleClick}>Widget #{widgetId} is crossing with widget #{targetId}!</li>
     );
   }
 }

@@ -1,4 +1,4 @@
-import { WidgetEvents, StackEvents, CanvasEvents } from './constants';
+import { WidgetEvents, StackEvents, CanvasEvents, WidgetColor } from './constants';
 
 export type Coordinate = { x: number, y: number };
 export type Size = { width?: number; height?: number };
@@ -83,6 +83,16 @@ export interface ILayersActionRunner {
   handleMouseDown: (e: MouseEvent, mode: MouseDownTarget) => void;
 }
 
+export interface IWidgetParams {
+  id: number;
+  coordinate: Coordinate;
+  isSticky: boolean;
+  isRepulsive: boolean;
+  color: WidgetColor;
+  size: Size;
+  type: WidgetTypes;
+}
+
 interface WidgetSample {
   id: number;
   type: string; // fix me: widgetTypes
@@ -99,11 +109,12 @@ export interface WidgetSampleProps {
 }
 
 export interface WidgetSamplesGroupProps {
+  header: string;
   samples: WidgetSample[];
   handleClickOnWidgetSample: (e: MouseEvent, mode: MouseDownTarget) => void;
 }
 
 export interface SidebarProps {
-  widgetSamples: WidgetSample[][];
+  widgetSamples: {sticky: WidgetSample[], default: WidgetSample[], repulsive: WidgetSample[] };
   handleClickOnWidgetSample: (e: MouseEvent, mode: MouseDownTarget) => void;
 }

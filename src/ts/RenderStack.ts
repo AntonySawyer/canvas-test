@@ -1,4 +1,4 @@
-import { IRenderStack, IWidget } from './interfaces';
+import { IRenderStack, IWidget, IWidgetParams } from './interfaces';
 import { subscriber } from './Subscriber';
 import { StackEvents, CanvasEvents, WidgetEvents } from './constants';
 import { widgetFactory } from './widgets/widgetFactory';
@@ -18,7 +18,7 @@ export default class RenderStack  implements IRenderStack {
     return this.getActive();
   }
 
-  initStackFromStorage = (stackParams: IWidget[]) => {
+  initStackFromStorage = (stackParams: IWidgetParams[]) => {
     this.stack.length = 0;
     stackParams.forEach((widgetParams) => {
       const widget = widgetFactory(widgetParams);

@@ -5,12 +5,13 @@ import './sidebar.css';
 
 export default class Sidebar extends React.Component<SidebarProps, {}> {
   render() {
+    const keys = Object.keys(this.props.widgetSamples);
     return (
       <section className="sidebarWrapper">
-        {/* FIX ME: index as key */ }
-          {this.props.widgetSamples.map((samples, index) => {
-            return <WidgetSamplesGroup key={index}
-                      samples={samples}
+          {keys.map((key) => {
+            return <WidgetSamplesGroup key={key}
+                      header={key}
+                      samples={this.props.widgetSamples[key]}
                       handleClickOnWidgetSample={this.props.handleClickOnWidgetSample} />;
           })}
       </section>

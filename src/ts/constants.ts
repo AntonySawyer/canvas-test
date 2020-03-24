@@ -72,8 +72,8 @@ export const widgetSamples = [
   { id: 100, type: 'rect', width: 100, height: 41 },
 ];
 
-export const widgetSamplesForReact = [
-  [
+export const widgetSamplesForReact = {
+  sticky: [
     { id: 15, type: 'rect', sticky: true, repulsive: false, width: 15, height: 75 },
     { id: 20, type: 'rect', sticky: true, repulsive: false, width: 20, height: 45 },
     { id: 25, type: 'rect', sticky: true, repulsive: false, width: 25, height: 60 },
@@ -92,7 +92,8 @@ export const widgetSamplesForReact = [
     { id: 90, type: 'rect', sticky: true, repulsive: false, width: 90, height: 67 },
     { id: 95, type: 'rect', sticky: true, repulsive: false, width: 95, height: 105 },
     { id: 100, type: 'rect', sticky: true, repulsive: false, width: 100, height: 41 },
-  ], [
+  ],
+  default: [
     { id: 15, type: 'rect', sticky: false, repulsive: false, width: 15, height: 75 },
     { id: 20, type: 'rect', sticky: false, repulsive: false, width: 20, height: 45 },
     { id: 25, type: 'rect', sticky: false, repulsive: false, width: 25, height: 60 },
@@ -111,11 +112,12 @@ export const widgetSamplesForReact = [
     { id: 90, type: 'rect', sticky: false, repulsive: false, width: 90, height: 67 },
     { id: 95, type: 'rect', sticky: false, repulsive: false, width: 95, height: 105 },
     { id: 100, type: 'rect', sticky: false, repulsive: false, width: 100, height: 41 },
-  ], [
+  ],
+  repulsive: [
     { id: 50, type: 'rect', sticky: false, repulsive: true, width: 50, height: 50 },
     { id: 65, type: 'rect', sticky: false, repulsive: true, width: 65, height: 24 },
     { id: 70, type: 'rect', sticky: false, repulsive: true, width: 70, height: 41 },
     { id: 90, type: 'rect', sticky: false, repulsive: true, width: 90, height: 67 },
     { id: 95, type: 'rect', sticky: false, repulsive: true, width: 95, height: 105 },
   ],
-];
+};
