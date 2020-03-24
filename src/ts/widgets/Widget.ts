@@ -49,9 +49,9 @@ export default abstract class Widget extends AxisPoint implements IWidget {
   }
 
   removeCrossingPair = (crossingId: number) => {
-    subscriber.notify(WidgetEvents.ChangeCrossingPair);
     const index = this.crossingPair.findIndex(id => id === crossingId);
     this.crossingPair.splice(index, 1);
+    subscriber.notify(WidgetEvents.ChangeCrossingPair);
     if (this.crossingPair.length === 0) {
       this.setCrossing(false);
     }

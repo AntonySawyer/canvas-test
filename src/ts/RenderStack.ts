@@ -27,22 +27,9 @@ export default class RenderStack  implements IRenderStack {
     subscriber.notify(StackEvents.ActiveWidgetRemoved);
   }
 
-  getOnlyCrossing = () => { // переименовать или возвращать только массив
+  getCrossingPairs = () => {
     const crossingWidgets = this.stack.filter(widget => widget.isCrossing);
     return this.getPairs(crossingWidgets);
-  }
-
-  getPairs = (crossingWidgets: IWidget[]) => { // переместить
-    const result: number[][] = [];
-    crossingWidgets.forEach((widget) => {
-      widget.crossingPair.forEach((id) => {
-        if (result.every(pair => pair[0] !== widget.id && pair[1] !== id)) {
-          result.push([widget.id, id].sort());
-        }
-      });
-    });
-    const joined = result.map(pair => pair.join());
-    return Array.from(new Set(joined)).map(str => str.split(',').map(i => +i));
   }
 
   setHighlightBordersByIds = (ids: number[]) => {
@@ -109,6 +96,17 @@ export default class RenderStack  implements IRenderStack {
   private getOnlyStaticWidgets = () => {
     return this.hasActiveWidget() ? this.getStackWithoutId(this.activeWidget.id)
           : this.getStack();
+  }
+
+  private getPairs = (crossingWidgets: IWidget[]) => {
+    const result: number[][] = [];
+    crossingWidgets.forEach((widget) => {
+      widget.crossingPair.forEach((id) => {
+        result.push([widget.id, id].sort());
+      });
+    });
+    const joined = result.map(pair => pair.join());
+    return Array.from(new Set(joined)).map(str => str.split(',').map(i => +i));
   }
 
 }

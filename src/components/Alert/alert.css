@@ -10,3 +10,7 @@ ul {
     padding: 3px;
     border: 1px solid black;
 }
+
+.alert.active {
+    background-color: coral;
+}

@@ -73,7 +73,7 @@ export interface IRenderStack {
   getStackWithoutId: (id: number) => IWidget[];
   getWidgetById: (id: number) => IWidget;
   getOnlySticky: () => IWidget[];
-  getOnlyCrossing: () => number[][];
+  getCrossingPairs: () => number[][];
   hasActiveWidget: () => boolean;
   setHighlightBordersByIds: (ids: number[]) => void;
   resetHighLightBorders: () => void;
@@ -94,7 +94,7 @@ interface WidgetSample {
   width: number;
   height: number;
   sticky: boolean;
-  scared: boolean;
+  repulsive: boolean;
 }
 
 // React

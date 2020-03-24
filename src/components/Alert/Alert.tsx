@@ -4,14 +4,12 @@ import './alert.css';
 interface AlertProps {
   widgetId: number;
   targetId: number;
+  isActiveAlert: boolean;
   setHighlightBordersByIds: (ids: number[]) => void;
+  changeActiveAlert: (activeAlertId: string) => void;
 }
 
-interface AlertState {
-  isActive: boolean;
-}
-
-export default class Alert extends React.Component<AlertProps, AlertState> {
+export default class Alert extends React.Component<AlertProps, {}> {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
@@ -20,12 +18,17 @@ export default class Alert extends React.Component<AlertProps, AlertState> {
   handleClick() {
     const { widgetId, targetId } = this.props;
     this.props.setHighlightBordersByIds([widgetId, targetId]);
+    this.props.changeActiveAlert(`${widgetId}${targetId}`);
   }
 
   render() {
-    const { widgetId, targetId } = this.props;
+    const { widgetId, targetId, isActiveAlert } = this.props;
+    let className = 'alert';
+    if (isActiveAlert) {
+      className += ' active';
+    }
     return (
-      <li className="alert"
+      <li className={className}
           onClick={this.handleClick}>Widget#{widgetId} is crossing with widget #{targetId}!</li>
     );
   }
