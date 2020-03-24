@@ -33,11 +33,13 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
 
   handleSaveBtn() {
     this.props.saveStack(this.state.inputValue);
-    this.setState((prevState) => {
-      const newAutocompleteOptions = [...prevState.autocompleteOptions];
-      newAutocompleteOptions.push(prevState.inputValue);
-      return { autocompleteOptions: newAutocompleteOptions };
-    });
+    if (!this.state.autocompleteOptions.includes(this.state.inputValue)) {
+      this.setState((prevState) => {
+        const newAutocompleteOptions = [...prevState.autocompleteOptions];
+        newAutocompleteOptions.push(prevState.inputValue);
+        return { autocompleteOptions: newAutocompleteOptions };
+      });
+    }
   }
 
   handleLoadBtn() {
