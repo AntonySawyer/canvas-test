@@ -4,8 +4,9 @@ import { staticCanvas } from '../helpers/DOM';
 import { BorderWidth, BorderColor } from '../constants';
 
 export default class RectWidget extends Widget implements IWidget {
-  constructor(id: number, coordinate: Coordinate, isSticky: boolean, color: string, sizes: Size) {
-    super(id, coordinate, isSticky, color);
+  constructor(id: number, coordinate: Coordinate, isSticky: boolean,
+              isRepulsive: boolean, color: string, sizes: Size) {
+    super(id, coordinate, isSticky, isRepulsive, color);
     this.width = sizes.width;
     this.height = sizes.height;
   }
@@ -13,7 +14,6 @@ export default class RectWidget extends Widget implements IWidget {
   height: number;
 
   draw() {
-    // console.error(`(I DRAW WIDGET #${this.id})`);
     const ctx = this.getTargetLayer().getContext('2d');
     const x = this.isActive ? this.getXForActiveLayer() : this.x;
     ctx.fillStyle = this.color;

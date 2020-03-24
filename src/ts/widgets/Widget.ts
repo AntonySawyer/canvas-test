@@ -5,16 +5,19 @@ import { subscriber } from '../Subscriber';
 import AxisPoint from './AxisPoint';
 
 export default abstract class Widget extends AxisPoint implements IWidget {
-  constructor(id: number, coordinate: Coordinate, isSticky: boolean, color: string) {
+  constructor(id: number, coordinate: Coordinate, isSticky: boolean,
+              isRepulsive: boolean, color: string) {
     super(coordinate.x, coordinate.y);
     this.id = id;
     this.isSticky = isSticky;
+    this.isRepulsive = isRepulsive;
     this.defaultColor = color as WidgetColor;
     this.draw = this.draw.bind(this); // ?
   }
 
   id: number;
   isSticky: boolean;
+  isRepulsive: boolean;
   defaultColor: WidgetColor;
   color: WidgetColor = WidgetColor.active;
   isActive: boolean;

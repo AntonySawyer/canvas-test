@@ -5,6 +5,7 @@ import Alertbar from './Alertbar';
 import { widgetSamplesForReact, CanvasEvents, WidgetEvents, StackEvents } from '../ts/constants';
 import { IRenderStack, MouseDownTarget } from 'src/ts/interfaces';
 import { subscriber } from '../ts/Subscriber';
+import { serializeStack, deserializeStack } from '../utils/localstorage';
 
 interface AppProps {
   stack: IRenderStack;
@@ -25,9 +26,22 @@ export class App extends React.Component<AppProps, AppState> {
     };
     this.updateWidgetCounter = this.updateWidgetCounter.bind(this);
     this.updateAlertWidgets = this.updateAlertWidgets.bind(this);
+    this.saveStack = this.saveStack.bind(this);
+    this.loadStack = this.loadStack.bind(this);
     subscriber.subscribe(CanvasEvents.StaticLayerCleared, this.updateWidgetCounter);
     subscriber.subscribe(StackEvents.ActiveWidgetRemoved, this.updateWidgetCounter);
     subscriber.subscribe(WidgetEvents.ChangeCrossingPair, this.updateAlertWidgets);
+  }
+
+  saveStack(name: string) {
+    const serializedStack = serializeStack(this.props.stack.getStack());
+    localStorage.setItem(name, serializedStack);
+  }
+
+  loadStack(name: string) {
+    const serializedStack = localStorage.getItem(name);
+    const stack = deserializeStack(serializedStack);
+    console.log(stack);
   }
 
   updateWidgetCounter() {
@@ -43,7 +57,9 @@ export class App extends React.Component<AppProps, AppState> {
   render() {
     return (
       <>
-        <Header widgetCount={this.state.widgetCount} />
+        <Header widgetCount={this.state.widgetCount}
+                saveStack={this.saveStack}
+                loadStack={this.loadStack} />
         <section className="wrapper">
           <Sidebar widgetSamples={widgetSamplesForReact}
             handleClickOnWidgetSample={this.props.handleClickOnWidgetSample} />

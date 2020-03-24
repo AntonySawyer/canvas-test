@@ -1,4 +1,4 @@
-import { WidgetColor, WidgetEvents, StackEvents, CanvasEvents } from './constants';
+import { WidgetEvents, StackEvents, CanvasEvents } from './constants';
 
 export type Coordinate = { x: number, y: number };
 export type Size = { width?: number; height?: number };
@@ -36,6 +36,7 @@ export interface IAxisPoint {
 export interface IWidget extends IAxisPoint {
   readonly id: number;
   readonly isSticky: boolean;
+  readonly isRepulsive: boolean;
   readonly width?: number;
   readonly height?: number;
   color: string;
@@ -53,14 +54,6 @@ export interface IWidget extends IAxisPoint {
   drawBorder: (x: number, ctx: CanvasRenderingContext2D) => void;
   moveToGeometricCenter: (xEvent: number, yEvent: number) => void;
   isOutOfBorders: () => boolean;
-}
-
-export interface IWidgetParams {
-  type: WidgetTypes;
-  isSticky: boolean;
-  color: WidgetColor;
-  coordinate: Coordinate;
-  size: Size;
 }
 
 export interface IRenderStack {
