@@ -1,7 +1,13 @@
 import * as React from 'react';
-import { WidgetSamplesGroupProps } from '../../ts/interfaces';
+import { IWidgetSample, MouseDownTarget } from '../../ts/interfaces';
 import WidgetSample from '../WidgetSample';
 import './widgetSamplesGroup.css';
+
+interface WidgetSamplesGroupProps {
+  header: string;
+  samples: IWidgetSample[];
+  handleClickOnWidgetSample: (e: MouseEvent, mode: MouseDownTarget) => void;
+}
 
 export default class WidgetSamplesGroup extends React.Component<WidgetSamplesGroupProps, {}> {
   render() {

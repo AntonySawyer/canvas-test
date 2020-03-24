@@ -2,7 +2,7 @@ import * as React from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Alertbar from './Alertbar';
-import { widgetSamplesForReact, CanvasEvents, WidgetEvents, StackEvents } from '../ts/constants';
+import { widgetSamples, CanvasEvents, WidgetEvents, StackEvents } from '../ts/constants';
 import { IRenderStack, MouseDownTarget } from 'src/ts/interfaces';
 import { subscriber } from '../ts/Subscriber';
 import { serializeStack, deserializeStack } from '../utils/localstorage';
@@ -61,7 +61,7 @@ export class App extends React.Component<AppProps, AppState> {
                 saveStack={this.saveStack}
                 loadStack={this.loadStack} />
         <section className="wrapper">
-          <Sidebar widgetSamples={widgetSamplesForReact}
+          <Sidebar widgetSamples={widgetSamples}
             handleClickOnWidgetSample={this.props.handleClickOnWidgetSample} />
           <Alertbar crossingList={this.state.crossingList}
           setHighlightBordersByIds={this.props.stack.setHighlightBordersByIds} />

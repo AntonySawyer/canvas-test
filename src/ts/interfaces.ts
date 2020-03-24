@@ -28,9 +28,6 @@ export interface IAxisPoint {
   setPosition: (x: number, y: number) => void;
   commitMovement: (movement: Coordinate) => void;
   getCoordinate: () => Coordinate;
-  getPoints: () => Points;
-  getPoints2: () => Coordinate[];
-  coordinateIsInside: (coordinate: Coordinate) => boolean;
 }
 
 export interface IWidget extends IAxisPoint {
@@ -54,7 +51,8 @@ export interface IWidget extends IAxisPoint {
   draw: () => void;
   drawBorder: (x: number, ctx: CanvasRenderingContext2D) => void;
   moveToGeometricCenter: (xEvent: number, yEvent: number) => void;
-  isOutOfBorders: () => boolean;
+  getPoints: () => Points;
+  getPoints2: () => Coordinate[];
 }
 
 export interface IRenderStack {
@@ -76,6 +74,7 @@ export interface IRenderStack {
 
 export interface ICrossingService {
   pointsCrossingWithOtherWidgets: (checkedId: number, checkedPoints: Points) => IWidget[];
+  isOutOfBorders: (widget: IWidget) => boolean;
 }
 
 export interface ILayersActionRunner {
@@ -93,28 +92,11 @@ export interface IWidgetParams {
   type: WidgetTypes;
 }
 
-interface WidgetSample {
+export interface IWidgetSample {
   id: number;
-  type: string; // fix me: widgetTypes
+  type: string;
   width: number;
   height: number;
   sticky: boolean;
   repulsive: boolean;
-}
-
-// React
-export interface WidgetSampleProps {
-  sample: WidgetSample;
-  handleClickOnWidgetSample: (e: MouseEvent, mode: MouseDownTarget) => void;
-}
-
-export interface WidgetSamplesGroupProps {
-  header: string;
-  samples: WidgetSample[];
-  handleClickOnWidgetSample: (e: MouseEvent, mode: MouseDownTarget) => void;
-}
-
-export interface SidebarProps {
-  widgetSamples: {sticky: WidgetSample[], default: WidgetSample[], repulsive: WidgetSample[] };
-  handleClickOnWidgetSample: (e: MouseEvent, mode: MouseDownTarget) => void;
 }

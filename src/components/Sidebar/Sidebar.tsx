@@ -1,7 +1,12 @@
 import * as React from 'react';
-import { SidebarProps } from '../../ts/interfaces';
+import { IWidgetSample, MouseDownTarget } from '../../ts/interfaces';
 import WidgetSamplesGroup from '../WidgetSamplesGroup';
 import './sidebar.css';
+
+interface SidebarProps {
+  widgetSamples: {sticky: IWidgetSample[], default: IWidgetSample[], repulsive: IWidgetSample[] };
+  handleClickOnWidgetSample: (e: MouseEvent, mode: MouseDownTarget) => void;
+}
 
 export default class Sidebar extends React.Component<SidebarProps, {}> {
   render() {
