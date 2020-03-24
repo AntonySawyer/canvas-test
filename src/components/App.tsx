@@ -2,7 +2,7 @@ import * as React from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Alertbar from './Alertbar';
-import { widgetSamplesForReact, CanvasEvents, WidgetEvents } from '../ts/constants';
+import { widgetSamplesForReact, CanvasEvents, WidgetEvents, StackEvents } from '../ts/constants';
 import { IRenderStack, MouseDownTarget } from 'src/ts/interfaces';
 import { subscriber } from '../ts/Subscriber';
 
@@ -26,6 +26,7 @@ export class App extends React.Component<AppProps, AppState> {
     this.updateWidgetCounter = this.updateWidgetCounter.bind(this);
     this.updateAlertWidgets = this.updateAlertWidgets.bind(this);
     subscriber.subscribe(CanvasEvents.StaticLayerCleared, this.updateWidgetCounter);
+    subscriber.subscribe(StackEvents.ActiveWidgetRemoved, this.updateWidgetCounter);
     subscriber.subscribe(WidgetEvents.ChangeCrossingPair, this.updateAlertWidgets);
   }
 
