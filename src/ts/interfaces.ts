@@ -93,10 +93,14 @@ export interface IWidgetParams {
 }
 
 export interface IWidgetSample {
-  id: number;
+  id: string;
   type: string;
   width: number;
   height: number;
-  sticky: boolean;
-  repulsive: boolean;
+}
+
+export interface IWidgetSampleGroups {
+  sticky: IWidgetSample[];
+  default: IWidgetSample[];
+  repulsive: IWidgetSample[];
 }

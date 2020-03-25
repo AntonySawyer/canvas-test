@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { IWidgetSample, MouseDownTarget } from '../../ts/interfaces';
+import { IWidgetSampleGroups, MouseDownTarget } from '../../ts/interfaces';
 import WidgetSamplesGroup from '../WidgetSamplesGroup';
 import './sidebar.css';
 
 interface SidebarProps {
-  widgetSamples: {sticky: IWidgetSample[], default: IWidgetSample[], repulsive: IWidgetSample[] };
+  widgetSamples: IWidgetSampleGroups;
   handleClickOnWidgetSample: (e: MouseEvent, mode: MouseDownTarget) => void;
 }
 

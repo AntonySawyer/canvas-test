@@ -10,11 +10,11 @@
     box-shadow: 3px 2px 7px -5px #000000;
 }
 
-.stickyWidget {
+.widgetsContainer.sticky > .widgetSample {
     background-color: #846cd6;
 }
 
-.repulsiveWidget {
+.widgetsContainer.repulsive > .widgetSample {
     background-color: #e1a7e6;
 }
 
