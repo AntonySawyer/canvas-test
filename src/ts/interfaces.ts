@@ -73,7 +73,7 @@ export interface IRenderStack {
 }
 
 export interface ICrossingService {
-  pointsCrossingWithOtherWidgets: (checkedId: number, checkedPoints: Points) => IWidget[];
+  pointsCrossingWithOtherWidgets: (checkedId: number, checkedPoints: Points, checkedWidgetisRepulsive: boolean) => IWidget[];
   isOutOfBorders: (widget: IWidget) => boolean;
 }
 

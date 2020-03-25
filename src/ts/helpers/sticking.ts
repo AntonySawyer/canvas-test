@@ -68,7 +68,7 @@ function trySetStickyCoordinates(activeWidget: IWidget, nearest: Coordinate) {
   const pointsForCheck = { first: { ...nearest },
     last: { x: nearest.x + activeWidget.width,
       y: nearest.y + activeWidget.height } };
-  const isFailure = crossingChecker.pointsCrossingWithOtherWidgets(activeWidget.id, pointsForCheck).length > 0;
+  const isFailure = crossingChecker.pointsCrossingWithOtherWidgets(activeWidget.id, pointsForCheck, false).length > 0; // false, because sticky can't be repulsive
   if (!isFailure && !crossingChecker.isOutOfBorders(activeWidget)) {
     activeWidget.setPosition(nearest.x, nearest.y);
   }

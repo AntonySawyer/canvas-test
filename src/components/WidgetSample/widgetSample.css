@@ -2,7 +2,7 @@
 .widgetSample {
     width: 100px;
     height: 40px;
-    background-color: #ffffff;
+    background-color: #cebf64;
     margin: 0 3px 3px 0;
     display: flex;
     justify-content: space-around;
@@ -11,11 +11,11 @@
 }
 
 .stickyWidget {
-    background-color: antiquewhite;
+    background-color: #846cd6;
 }
 
 .repulsiveWidget {
-    background-color: hsl(295, 78%, 91%);
+    background-color: #e1a7e6;
 }
 
 .widgetSample:hover {

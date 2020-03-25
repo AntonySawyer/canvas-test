@@ -25,7 +25,7 @@ export function collectParamsFromEvent(stack: IWidget[], e: MouseEvent) {
 
   const isSticky = dataset.sticky === 'true';
   const isRepulsive = dataset.repulsive === 'true';
-  const color = isSticky ? WidgetColor.sticky : WidgetColor.nonSticky;
+  const color = getColor(isSticky, isRepulsive);
   const coordinate = { x: convertXForStaticLayer(e.pageX), y: e.pageY };
 
   const widgetCategory: WidgetCategories = getCategory(isSticky, isRepulsive);
@@ -40,11 +40,21 @@ export function collectParamsFromEvent(stack: IWidget[], e: MouseEvent) {
 }
 
 function getCategory(isSticky: boolean, isRepulsive: boolean) {
-  if (isRepulsive) {
-    return WidgetCategories.repulsive;
-  }
   if (isSticky) {
     return WidgetCategories.sticky;
   }
+  if (isRepulsive) {
+    return WidgetCategories.repulsive;
+  }
   return WidgetCategories.default;
+}
+
+function getColor(isSticky: boolean, isRepulsive: boolean) {
+  if (isSticky) {
+    return WidgetColor.sticky;
+  }
+  if (isRepulsive) {
+    return WidgetColor.repulsive;
+  }
+  return WidgetColor.default;
 }

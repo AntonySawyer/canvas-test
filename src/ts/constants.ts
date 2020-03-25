@@ -1,4 +1,6 @@
 export const stickyLimit = 50;
+export const repulsiveLimit = 100;
+
 export const arrowSpeed = 5;
 export const primaryBtnIndex = 1;
 
@@ -21,7 +23,8 @@ export enum WidgetColor {
   active = '#44bd0d',
   hightlight = '#f3906d',
   sticky = '#846cd6',
-  nonSticky = '#cebf64',
+  repulsive = '#e1a7e6',
+  default = '#cebf64',
 }
 
 export enum BorderWidth {
