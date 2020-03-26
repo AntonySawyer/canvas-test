@@ -23,10 +23,8 @@ export class App extends React.Component<AppProps, AppState> {
       widgetCount: 0,
       crossingList: [],
     };
-    this.updateWidgetCounter = this.updateWidgetCounter.bind(this);
-    this.updateAlertWidgets = this.updateAlertWidgets.bind(this);
-    subscriber.subscribe(CanvasEvents.StaticLayerCleared, this.updateWidgetCounter);
-    subscriber.subscribe(WidgetEvents.ChangeCrossingPair, this.updateAlertWidgets);
+    subscriber.subscribe(CanvasEvents.StaticLayerCleared, () => this.updateWidgetCounter());
+    subscriber.subscribe(WidgetEvents.ChangeCrossingPair, () => this.updateAlertWidgets());
   }
 
   updateWidgetCounter() {

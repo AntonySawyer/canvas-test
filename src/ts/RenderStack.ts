@@ -32,12 +32,12 @@ export default class RenderStack  implements IRenderStack {
     return this.getPairs(crossingWidgets);
   }
 
-  setHighlightBordersByIds = (ids: number[]) => {
+  setHighlightBordersByIds = (widgetIds: number[]) => {
     if (this.hasActiveWidget()) {
       this.resetActive();
     }
     this.resetHighLightBorders();
-    ids.forEach((id) => {
+    widgetIds.forEach((id) => {
       const widget = this.getWidgetById(id);
       widget.setHighlightBorders(true);
     });
