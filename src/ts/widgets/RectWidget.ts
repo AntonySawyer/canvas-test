@@ -1,11 +1,12 @@
 import Widget from './Widget';
-import { IWidget, Coordinate, Size } from '../interfaces';
-import { staticCanvas } from '../helpers/DOM';
+import { IWidget, Coordinate, Size, WidgetTypes } from '../interfaces';
 import { BorderWidth, BorderColor } from '../constants';
+import { getXForActiveLayer } from '../helpers/coordinate';
 
 export default class RectWidget extends Widget implements IWidget {
-  constructor(id: number, coordinate: Coordinate, isSticky: boolean, color: string, sizes: Size) {
-    super(id, coordinate, isSticky, color);
+  constructor(id: number, coordinate: Coordinate, isSticky: boolean,
+              isRepulsive: boolean, color: string, sizes: Size, type: WidgetTypes) {
+    super(id, coordinate, isSticky, isRepulsive, color, type);
     this.width = sizes.width;
     this.height = sizes.height;
   }
@@ -13,9 +14,8 @@ export default class RectWidget extends Widget implements IWidget {
   height: number;
 
   draw() {
-    // console.error(`(I DRAW WIDGET #${this.id})`);
     const ctx = this.getTargetLayer().getContext('2d');
-    const x = this.isActive ? this.getXForActiveLayer() : this.x;
+    const x = this.isActive ? getXForActiveLayer(this.x) : this.x;
     ctx.fillStyle = this.color;
     ctx.fillRect(x, this.y, this.width, this.height);
     this.drawBorder(x, ctx);
@@ -27,16 +27,9 @@ export default class RectWidget extends Widget implements IWidget {
     ctx.strokeRect(x, this.y, this.width, this.height);
   }
 
-// выглядит как не особо нужная дичь, которую можно вынести отсюда, как минимум на верхний уровень
   moveToGeometricCenter(xEvent: number, yEvent: number) {
     this.x = xEvent - this.width / 2;
     this.y = yEvent - this.height / 2;
-  }
-// или вообще добавить в проверку пересечений
-  isOutOfBorders() { // in crossing checker ?
-    const points = this.getPoints();
-    return points.first.x < 0 || points.first.y < 0
-          || points.last.x > staticCanvas.width || points.last.y > staticCanvas.height;
   }
 
 }

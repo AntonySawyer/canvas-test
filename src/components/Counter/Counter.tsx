@@ -8,7 +8,7 @@ interface CounterProps {
 export default class Counter extends React.Component<CounterProps, {}> {
   render() {
     return (
-        <span>Widget count: {this.props.widgetCount}</span>
+        <span className="counter">Widget count: <b>{this.props.widgetCount}</b></span>
     );
   }
 }

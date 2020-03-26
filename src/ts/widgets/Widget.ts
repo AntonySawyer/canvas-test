@@ -1,22 +1,27 @@
-import { IWidget, Coordinate } from '../interfaces';
+import { IWidget, Coordinate, WidgetTypes } from '../interfaces';
 import { activeCanvas, staticCanvas } from '../helpers/DOM';
 import { WidgetColor, WidgetEvents } from '../constants';
 import { subscriber } from '../Subscriber';
 import AxisPoint from './AxisPoint';
 
 export default abstract class Widget extends AxisPoint implements IWidget {
-  constructor(id: number, coordinate: Coordinate, isSticky: boolean, color: string) {
+  constructor(id: number, coordinate: Coordinate, isSticky: boolean,
+              isRepulsive: boolean, color: string, type: WidgetTypes) {
     super(coordinate.x, coordinate.y);
     this.id = id;
+    this.type = type;
     this.isSticky = isSticky;
+    this.isRepulsive = isRepulsive;
     this.defaultColor = color as WidgetColor;
     this.draw = this.draw.bind(this); // ?
   }
 
   id: number;
   isSticky: boolean;
+  isRepulsive: boolean;
   defaultColor: WidgetColor;
   color: WidgetColor = WidgetColor.active;
+  type: WidgetTypes;
   isActive: boolean;
   isCrossing: boolean = false;
   crossingPair: number[] = [];
@@ -24,8 +29,7 @@ export default abstract class Widget extends AxisPoint implements IWidget {
 
   abstract draw(): void;
   abstract moveToGeometricCenter(xEvent: number, yEvent: number): void;
-  abstract isOutOfBorders(): boolean;
-  abstract drawBorder(x, ctx): void;
+  abstract drawBorder(x: number, ctx: CanvasRenderingContext2D): void;
 
   setActive = (isActive: boolean) => {
     this.isActive = isActive;
@@ -61,13 +65,27 @@ export default abstract class Widget extends AxisPoint implements IWidget {
     this.isHighlightBorders = isHighlightBorders;
   }
 
+  getPoints() {
+    const first = this.getCoordinate();
+    const last = { x: this.x + this.width, y: this.y + this.height };
+    return { first, last };
+  }
+
+  getPoints2() { // for next sticking implemetation
+    const { first, last } = this.getPoints();
+    return [first, { x: first.x, y: last.y }, { x: last.x, y: first.y }, last];
+  }
+
   protected getTargetLayer = () => {
     return this.isActive ? activeCanvas : staticCanvas;
   }
 
   private setCorrectColorProperty = () => {
-    this.color = this.isCrossing ? WidgetColor.hightlight // remove !
-                : this.isActive ? WidgetColor.active : this.defaultColor;
+    if (this.isCrossing) {
+      this.color = WidgetColor.hightlight;
+    } else {
+      this.color = this.isActive ? WidgetColor.active : this.defaultColor;
+    }
     this.draw();
   }
 

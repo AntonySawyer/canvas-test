@@ -1,15 +1,17 @@
-import { ICrossingService, Points } from './interfaces';
+import { ICrossingService, Points, IWidget } from './interfaces';
 import { someInRange } from './helpers/math';
 import { actionRunner } from './app';
 import { subscriber } from './Subscriber';
-import { WidgetEvents } from './constants';
+import { WidgetEvents, StackEvents } from './constants';
+import { staticCanvas } from './helpers/DOM';
 
 class CrossingService implements ICrossingService {
   constructor() {
     subscriber.subscribe(WidgetEvents.SetNewPosition, this.setCrossingIfNeeded);
+    subscriber.subscribe(StackEvents.InitStackFromStorage, this.setCrossingIfNeeded);
   }
 
-  setCrossingIfNeeded = () => {
+  private setCrossingIfNeeded = () => {
     const widget = actionRunner.stack.activeWidget;
     const widgetPoints = widget.getPoints();
     const crossingWidgets = this.pointsCrossingWithOtherWidgets(widget.id, widgetPoints);
@@ -38,7 +40,13 @@ class CrossingService implements ICrossingService {
     });
   }
 
-  private checkCrossing(points: Points, pointsForCheck: Points) { // ?
+  isOutOfBorders(widget: IWidget) {
+    const points = widget.getPoints();
+    return points.first.x < 0 || points.first.y < 0
+          || points.last.x > staticCanvas.width || points.last.y > staticCanvas.height;
+  }
+
+  private checkCrossing(points: Points, pointsForCheck: Points) {
     return (
       someInRange(points.first.x, points.last.x, [pointsForCheck.first.x, pointsForCheck.last.x])
    || someInRange(pointsForCheck.first.x, pointsForCheck.last.x, [points.first.x, points.last.x])

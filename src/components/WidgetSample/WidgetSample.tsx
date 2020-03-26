@@ -1,6 +1,11 @@
 import * as React from 'react';
-import { WidgetSampleProps } from '../../ts/interfaces';
 import './widgetSample.css';
+import { MouseDownTarget, IWidgetSample } from '../../ts/interfaces';
+
+interface WidgetSampleProps {
+  sample: IWidgetSample;
+  handleClickOnWidgetSample: (e: MouseEvent, mode: MouseDownTarget) => void;
+}
 
 export default class WidgetSample extends React.Component<WidgetSampleProps, {}> {
 
@@ -14,7 +19,6 @@ export default class WidgetSample extends React.Component<WidgetSampleProps, {}>
     return (
         <div className={sampleClassName}
           data-id={id}
-          data-type={type}
           data-sticky={sticky}
           data-repulsive={repulsive}
           onMouseDown={e => this.handleMouseDown(e)}>

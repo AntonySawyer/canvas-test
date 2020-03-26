@@ -1,3 +1,9 @@
 .alertBar {
     width: 285px;
 }
+
+.alertBar > h3 {
+    text-align: center;
+    text-transform: uppercase;
+    color: #ff7f50;
+}
