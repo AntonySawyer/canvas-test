@@ -69,7 +69,7 @@ function trySetStickyCoordinates(activeWidget: IWidget, nearest: Coordinate) {
     last: { x: nearest.x + activeWidget.width,
       y: nearest.y + activeWidget.height } };
   const isFailure = crossingChecker.pointsCrossingWithOtherWidgets(activeWidget.id, pointsForCheck).length > 0;
-  if (!isFailure && !activeWidget.isOutOfBorders()) {
+  if (!isFailure && !crossingChecker.isOutOfBorders(activeWidget)) {
     activeWidget.setPosition(nearest.x, nearest.y);
   }
 }

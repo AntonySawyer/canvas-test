@@ -2,9 +2,10 @@ import * as React from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Alertbar from './Alertbar';
-import { widgetSamplesForReact, CanvasEvents, WidgetEvents } from '../ts/constants';
+import { widgetSamples, CanvasEvents, WidgetEvents, StackEvents } from '../ts/constants';
 import { IRenderStack, MouseDownTarget } from 'src/ts/interfaces';
 import { subscriber } from '../ts/Subscriber';
+import { serializeStack, deserializeStack } from '../utils/localstorage';
 
 interface AppProps {
   stack: IRenderStack;
@@ -24,7 +25,19 @@ export class App extends React.Component<AppProps, AppState> {
       crossingList: [],
     };
     subscriber.subscribe(CanvasEvents.StaticLayerCleared, () => this.updateWidgetCounter());
+    subscriber.subscribe(StackEvents.ActiveWidgetRemoved, () => this.updateWidgetCounter());
     subscriber.subscribe(WidgetEvents.ChangeCrossingPair, () => this.updateAlertWidgets());
+  }
+
+  saveStack(name: string) {
+    const serializedStack = serializeStack(this.props.stack.getStack());
+    localStorage.setItem(name, serializedStack);
+  }
+
+  loadStack(name: string) {
+    const serializedStack = localStorage.getItem(name);
+    const stackParams = deserializeStack(serializedStack);
+    this.props.stack.initStackFromStorage(stackParams);
   }
 
   updateWidgetCounter() {
@@ -40,9 +53,11 @@ export class App extends React.Component<AppProps, AppState> {
   render() {
     return (
       <>
-        <Header widgetCount={this.state.widgetCount} />
+        <Header widgetCount={this.state.widgetCount}
+                saveStack={name => this.saveStack(name)}
+                loadStack={name => this.loadStack(name)} />
         <section className="wrapper">
-          <Sidebar widgetSamples={widgetSamplesForReact}
+          <Sidebar widgetSamples={widgetSamples}
             handleClickOnWidgetSample={this.props.handleClickOnWidgetSample} />
           <Alertbar crossingList={this.state.crossingList}
           setHighlightBordersByIds={this.props.stack.setHighlightBordersByIds} />

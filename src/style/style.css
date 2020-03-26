@@ -17,21 +17,23 @@ canvas {
     border: 1px solid black;
 }
 
-#activeCanvas {
-    position: absolute;
-    pointer-events: none;
-    top: 49px;
-    left: 8px;
-}
-
 .sidebarWrapper,
 #staticCanvas {
     border-right: none;
 }
 
+#activeCanvas, 
 #staticCanvas {
     position: absolute;
-    top: 49px;
+    top: 55px;
+}
+
+#activeCanvas {
+    pointer-events: none;
+    left: 8px;
+}
+
+#staticCanvas {
     left: 359px;
     z-index: 1;
 }
