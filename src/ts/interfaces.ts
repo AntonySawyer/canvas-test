@@ -73,7 +73,7 @@ export interface IRenderStack {
   getOnlySticky: () => IWidget[];
   getCrossingPairs: () => number[][];
   hasActiveWidget: () => boolean;
-  setHighlightBordersByIds: (ids: number[]) => void;
+  setHighlightBordersByIds: (widgetIds: number[]) => void;
   resetHighLightBorders: () => void;
 }
 
