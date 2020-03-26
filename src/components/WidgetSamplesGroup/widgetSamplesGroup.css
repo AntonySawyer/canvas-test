@@ -1,0 +1,10 @@
+.widgetsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.widgetsContainer > h3 {
+    width: 100%;
+    text-transform: capitalize;
+}

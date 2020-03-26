@@ -1,0 +1,46 @@
+
+.widgetSample {
+    width: 100px;
+    height: 40px;
+    background-color: #cebf64;
+    margin: 0 3px 3px 0;
+    display: flex;
+    justify-content: space-around;
+    line-height: 3;
+    box-shadow: 3px 2px 7px -5px #000000;
+}
+
+.widgetsContainer.sticky > .widgetSample {
+    background-color: #846cd6;
+}
+
+.widgetsContainer.repulsive > .widgetSample {
+    background-color: #e1a7e6;
+}
+
+.widgetSample:hover {
+    cursor: pointer;
+}
+
+.widgetSample > * {
+    pointer-events: none;
+}
+
+.bigUnit {
+    width: 86%;
+    justify-content: space-between;
+    line-height: 3;
+}
+
+.fullSize {
+    padding: 0 10px;
+}
+
+.widgetSampleDescr {
+    font-size: 13px;
+}
+
+.widgetSampleIcon {
+    font-weight: 800;
+    font-size: 14px;
+}

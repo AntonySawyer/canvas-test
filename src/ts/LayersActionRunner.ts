@@ -1,4 +1,4 @@
-import widgetFactory from './widgets/widgetFactory';
+import { widgetFactory, collectParamsFromEvent } from './widgets/widgetFactory';
 import { Coordinate, IRenderStack, MouseDownTarget, KeyboardKeysForListen,
          NextMoveMode, ILayersActionRunner } from './interfaces';
 import RenderStack from './RenderStack';
@@ -7,15 +7,13 @@ import { staticCanvas, ctxStatic, staticWidth, staticHeight, activeCanvas } from
 import { isPrimaryBtnPressed, getArrowMovement } from './helpers/events';
 import { Static } from './layers/Static';
 import { activeLayer } from './layers/Active';
-import { convertXForStaticLayer } from './helpers/math';
+import { convertXForStaticLayer, coordinateIsInside } from './helpers/coordinate';
+import { crossingChecker } from './CrossingService';
 
 export default class LayersActionRunner implements ILayersActionRunner { // rename
   constructor() {
     staticCanvas.addEventListener('mousedown',
                                   (e: MouseEvent) => this.handleMouseDown(e, 'canvas'));
-    document.querySelectorAll('.widgetSample').forEach((el) => {
-      el.addEventListener('mousedown', (e: MouseEvent) => this.handleMouseDown(e, 'div'));
-    });
     activeCanvas.addEventListener('mousemove', (e: MouseEvent) => this.onMouseMove(e));
     document.addEventListener('keydown', (e: KeyboardEvent) => this.onKeyboardMove(e));
     document.addEventListener('mouseup', () => this.actionEnd());
@@ -23,11 +21,13 @@ export default class LayersActionRunner implements ILayersActionRunner { // rena
     this.stack = new RenderStack();
     // tslint:disable-next-line: no-unused-expression
     new Static(ctxStatic, staticWidth, staticHeight);
+
+    this.handleMouseDown = this.handleMouseDown.bind(this);
   }
 
   stack: IRenderStack;
 
-  private handleMouseDown(e: MouseEvent, mode: MouseDownTarget) {
+  handleMouseDown(e: MouseEvent, mode: MouseDownTarget) {
     if (isPrimaryBtnPressed(e.buttons)) {
       const isActiveLayerOnTop = true;
       activeLayer.setLayerOnTop(isActiveLayerOnTop);
@@ -45,7 +45,7 @@ export default class LayersActionRunner implements ILayersActionRunner { // rena
   private actionEnd() { // rename ???? OR remove
     const isActiveLayerOnTop = false;
     activeLayer.setLayerOnTop(isActiveLayerOnTop);
-    if (this.stack.hasActiveWidget() && this.stack.activeWidget.isOutOfBorders()) {
+    if (this.stack.hasActiveWidget() && crossingChecker.isOutOfBorders(this.stack.activeWidget)) {
       this.stack.deleteActiveWidget();
     }
   }
@@ -75,14 +75,16 @@ export default class LayersActionRunner implements ILayersActionRunner { // rena
   }
 
   private createNewWidget(e: MouseEvent) {
-    const widget = widgetFactory(this.stack.getStack(), e);
+    const params = collectParamsFromEvent(this.stack.getStack(), e);
+    const widget = widgetFactory(params);
     this.stack.addWidget(widget);
   }
 
   private setActiveWidgetIfNeeded(e: MouseEvent) {
     const clickCoordinate = { x: e.offsetX, y: e.offsetY };
     for (const widget of this.stack.getStack()) {
-      if (widget.coordinateIsInside(clickCoordinate)) {
+      const widgetPoints = widget.getPoints();
+      if (coordinateIsInside(widgetPoints, clickCoordinate)) {
         if (!widget.isActive) { // =(
           this.stack.setNewActive(widget);
         }

@@ -1,34 +1,52 @@
 import RectWidget from './RectWidget';
-import { IWidget, Size, WidgetTypes } from '../interfaces';
-import { widgetSamples, WidgetColor } from '../constants';
-import { convertXForStaticLayer } from '../helpers/math';
+import { IWidget, Size, WidgetTypes, IWidgetParams, IWidgetSample } from '../interfaces';
+import { WidgetColor, widgetSamples, WidgetCategories } from '../constants';
+import { convertXForStaticLayer } from '../helpers/coordinate';
 
-function widgetFactory(stack: IWidget[], e: MouseEvent) {
-  const id = stack.length === 0
-            ? 0
-            : stack.reduce((previousWidget, currentWidget) => {
-              return previousWidget.id > currentWidget.id ? previousWidget : currentWidget;
-            }).id + 1;
-  const dataset = (e.target as HTMLElement).dataset;
-  const { width, height } = widgetSamples.filter(sample => sample.id === +dataset.id)[0]; // ?
-
-  const type = dataset.type as WidgetTypes;
-  const isSticky = dataset.sticky === 'true'; // bad
-  const color = isSticky ? WidgetColor.sticky : WidgetColor.nonSticky;
-  const size: Size = { width, height };
-  const coordinate = { x: convertXForStaticLayer(e.pageX), y: e.pageY };
-
+export function widgetFactory(params: IWidgetParams) {
+  const { id, coordinate, size, color, type, isSticky, isRepulsive } = params;
   let widget: IWidget;
-
   switch (type) {
     case 'rect':
-      widget = new RectWidget(id, coordinate, isSticky, color, size);
+      widget = new RectWidget(id, coordinate, isSticky, isRepulsive, color, size, type);
     default:
       break;
   }
-
-  widget.moveToGeometricCenter(coordinate.x, coordinate.y); // ?
   return widget;
 }
 
-export default widgetFactory;
+export function collectParamsFromEvent(stack: IWidget[], e: MouseEvent) {
+  const id = stack.length === 0
+          ? 0
+          : stack.reduce((previousWidget, currentWidget) => {
+            return previousWidget.id > currentWidget.id ? previousWidget : currentWidget;
+          }).id + 1;
+  const dataset = (e.target as HTMLElement).dataset;
+
+  let category: WidgetCategories;
+  let targetSample: IWidgetSample;
+
+  for (const sampleCategory in widgetSamples) {
+    if (widgetSamples[sampleCategory].filter(sample => sample.id === dataset.id).length !== 0) {
+      category = sampleCategory as WidgetCategories;
+      targetSample = widgetSamples[sampleCategory].filter(sample => sample.id === dataset.id)[0];
+    }
+  }
+
+  const isSticky = category === WidgetCategories.sticky;
+  const isRepulsive = category === WidgetCategories.repulsive;
+  const color = getColor(isSticky, isRepulsive);
+  const type = targetSample.type as WidgetTypes;
+  const coordinate = { x: convertXForStaticLayer(e.pageX), y: e.pageY };
+  const { width, height } = targetSample;
+  const size: Size = { width, height };
+
+  return { id, coordinate, size, color, type, isSticky, isRepulsive };
+}
+
+function getColor(isSticky: boolean, isRepulsive: boolean) {
+  if (isSticky) {
+    return WidgetColor.sticky;
+  }
+  return isRepulsive ? WidgetColor.repulsive : WidgetColor.default;
+}

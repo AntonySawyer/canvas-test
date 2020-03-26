@@ -12,13 +12,18 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+        exclude: /node_modules/,
+      },
     ],
   },
   devServer: {
     contentBase: './',
   },
   resolve: {
-    extensions: ['.ts', '.tsx', ".js", ".jsx"],
+    extensions: ['.ts', '.tsx', ".js", ".jsx", ".css"],
   },
   output: {
     filename: '[name].app.js',
