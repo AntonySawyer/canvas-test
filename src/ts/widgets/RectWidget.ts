@@ -21,6 +21,17 @@ export default class RectWidget extends Widget implements IWidget {
     this.drawBorder(x, ctx);
   }
 
+  getPoints() {
+    const first = this.getCoordinate();
+    const last = { x: this.x + this.width, y: this.y + this.height };
+    return { first, last };
+  }
+
+  getPoints2() { // for next sticking implemetation
+    const { first, last } = this.getPoints();
+    return [first, { x: last.x, y: first.y }, last, { x: first.x, y: last.y }];
+  }
+
   drawBorder(x: number, ctx: CanvasRenderingContext2D) {
     ctx.lineWidth = this.isHighlightBorders ? BorderWidth.hidghlighted : BorderWidth.default;
     ctx.strokeStyle = this.isHighlightBorders ? BorderColor.hidghlighted : BorderColor.default;

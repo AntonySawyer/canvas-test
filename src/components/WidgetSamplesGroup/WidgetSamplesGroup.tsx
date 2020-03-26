@@ -13,7 +13,7 @@ export default class WidgetSamplesGroup extends React.Component<WidgetSamplesGro
   render() {
     const { header, samples, handleClickOnWidgetSample } = this.props;
     return (
-      <section className="widgetsContainer">
+      <section className={`widgetsContainer ${header}`}>
         <h3>{`${header} widgets`}</h3>
           {samples.map((sample, index) => {
             return <WidgetSample key={`${header}_${index}`} sample={sample}

@@ -2,7 +2,7 @@ import { ICrossingService, Points, IWidget } from './interfaces';
 import { someInRange } from './helpers/math';
 import { actionRunner } from './app';
 import { subscriber } from './Subscriber';
-import { WidgetEvents, StackEvents } from './constants';
+import { WidgetEvents, StackEvents, repulsiveLimit } from './constants';
 import { staticCanvas } from './helpers/DOM';
 
 class CrossingService implements ICrossingService {
@@ -14,7 +14,13 @@ class CrossingService implements ICrossingService {
   private setCrossingIfNeeded = () => {
     const widget = actionRunner.stack.activeWidget;
     const widgetPoints = widget.getPoints();
-    const crossingWidgets = this.pointsCrossingWithOtherWidgets(widget.id, widgetPoints);
+    if (widget.isRepulsive) {
+      widgetPoints.first.x -= repulsiveLimit;
+      widgetPoints.first.y -= repulsiveLimit;
+      widgetPoints.last.x += repulsiveLimit;
+      widgetPoints.last.y += repulsiveLimit;
+      }
+    const crossingWidgets = this.pointsCrossingWithOtherWidgets(widget.id, widgetPoints, widget.isRepulsive);
     const crossingIds = crossingWidgets.map(crossingWidget => crossingWidget.id);
 
     // update self and others to set crossing = false
@@ -34,9 +40,16 @@ class CrossingService implements ICrossingService {
     });
   }
 
-  pointsCrossingWithOtherWidgets = (checkedId: number, pointsForCheck: Points) => {
+  pointsCrossingWithOtherWidgets = (checkedId: number, pointsForCheck: Points, checkedWidgetisRepulsive: boolean) => {
     return actionRunner.stack.getStackWithoutId(checkedId).filter((widget) => {
-      return this.checkCrossing(widget.getPoints(), pointsForCheck);
+      const widgetControlPoints = widget.getPoints();
+      if (widget.isRepulsive && !checkedWidgetisRepulsive) {
+        widgetControlPoints.first.x -= repulsiveLimit;
+        widgetControlPoints.first.y -= repulsiveLimit;
+        widgetControlPoints.last.x += repulsiveLimit;
+        widgetControlPoints.last.y += repulsiveLimit;
+        }
+      return this.checkCrossing(widgetControlPoints, pointsForCheck);
     });
   }
 

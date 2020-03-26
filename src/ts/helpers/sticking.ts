@@ -1,188 +1,134 @@
-import { IRenderStack, Coordinate, IWidget, NextMoveMode } from '../interfaces';
-import { somePointInRangeWithLimit } from './math';
-import { filterCandidatesForKeyboardUnstick } from './keyboard';
+import { IRenderStack, Coordinate, IWidget, NextMoveMode, IDirection } from '../interfaces';
 import { crossingChecker } from '../CrossingService';
-// import { stickyLimit } from '../constants';
+import { stickyLimit } from '../constants';
 
 export function attemptMoveToSticking(stack: IRenderStack, mode: NextMoveMode,
                                       movement: Coordinate) {
-  // const test = andAgain(stack, mode, movement);
+  const direction: IDirection = detectDirection(movement);
   const activeWidget = stack.activeWidget;
-  const staticCoords = activeWidget.getCoordinate();
-  const candidates = { x: [], y: [] };
+  const activePoints = activeWidget.getPoints2();
+  const result = [];
 
   stack.getOnlySticky()
-      .filter(widget => widget.id !== activeWidget.id)
-      .filter(widget => onlyNearbyInStickingLimit(activeWidget, widget))
-      .forEach((widget) => {
-        candidates.x.push(...prepareCoordsOfNeibor(widget.x, widget.width, activeWidget.width, activeWidget.x, mode, movement.x));
-        candidates.y.push(...prepareCoordsOfNeibor(widget.y, widget.height, activeWidget.height, activeWidget.y, mode, movement.y));
-      });
-  if (mode === 'keyboard') {
-    filterCandidatesForKeyboardUnstick(candidates, movement, activeWidget);
-  }
-
-  const nearest = chooseNearestCoordinate(candidates, staticCoords);
-  trySetStickyCoordinates(activeWidget, nearest);
-}
-
-function onlyNearbyInStickingLimit(activeWidget: IWidget, checkWidget: IWidget) {
-  const activePoints = activeWidget.getPoints();
-  const checkPoints = checkWidget.getPoints();
-  return somePointInRangeWithLimit([activePoints.first.x, activePoints.last.x],
-                                   [checkPoints.first.x, checkPoints.last.x])
-      && somePointInRangeWithLimit([activePoints.first.y, activePoints.last.y],
-                                   [checkPoints.first.y, checkPoints.last.y]);
-}
-
-function prepareCoordsOfNeibor(nearbyCoord: number, nearbySize: number, activeSize: number, activeCoord: number, mode: NextMoveMode, movement: number) {
-  // activeSize = points.last.x - points.first.x
-  const offset = activeCoord + movement;
-  let arr = [nearbyCoord, nearbyCoord - activeSize - 1, nearbyCoord + nearbySize + 1, nearbyCoord + nearbySize - activeSize];
-  if (mode === 'keyboard') {
-    arr = arr.filter((point) => {
-      if (movement === 0) {
-        return false;
-      }
-      return movement > 0 ? point > offset : point < offset;
-    });
-  }
-  return arr;
-}
-
-function chooseNearestCoordinate(candidates: {x: number[], y: number[]}, staticCoords: Coordinate) {
-  const nearest = { ...staticCoords };
-  for (const axis in candidates) {
-    if (candidates[axis].length !== 0) {
-      nearest[axis] = candidates[axis].reduce((previousPoint, currentPoint) => {
-        const previousDelta = previousPoint - staticCoords[axis];
-        const currentDelta = currentPoint - staticCoords[axis];
-        return Math.abs(previousDelta) < Math.abs(currentDelta) ? previousPoint : currentPoint;
-      });
+        .filter(widget => !widget.isActive)
+        .forEach((widget) => {
+          activePoints.forEach((activePoint: Coordinate, activePointIndex) => {
+            widget.getPoints2()
+                  .forEach((widgetPoint: Coordinate, nearestPointIndex) => {
+                    if (pointsByDirection(direction, widgetPoint, activePoint)) {
+                      const distance = distanceBetweenPoints(activePoint, widgetPoint);
+                      if (distance < stickyLimit) {
+                        result.push({ widgetPoint, activePointIndex, nearestPointIndex, distance });
+                      }
+                    }
+                  });
+          });
+        });
+  const nearestPoint = result.sort((a, b) => a.distance - b.distance)[0];
+  if (nearestPoint !== undefined) {
+    nearestPoint.activePoint = getPointForActiveMove(activeWidget, nearestPoint);
+    if (direction.horizontal === 'zero' && mode === 'keyboard') { // move by pixels
+      nearestPoint.activePoint.x = activeWidget.x;
     }
+    if (direction.vertical === 'zero' && mode === 'keyboard') {
+      nearestPoint.activePoint.y = activeWidget.y;
+    }
+    trySetStickyCoordinates(activeWidget, nearestPoint.activePoint, movement);
   }
-  return nearest;
+
 }
 
-function trySetStickyCoordinates(activeWidget: IWidget, nearest: Coordinate) {
+function trySetStickyCoordinates(activeWidget: IWidget, nearest: Coordinate, movement: Coordinate) {
   const pointsForCheck = { first: { ...nearest },
     last: { x: nearest.x + activeWidget.width,
       y: nearest.y + activeWidget.height } };
-  const isFailure = crossingChecker.pointsCrossingWithOtherWidgets(activeWidget.id, pointsForCheck).length > 0;
-  if (!isFailure && !crossingChecker.isOutOfBorders(activeWidget)) {
+  const crossingWidgets = crossingChecker.pointsCrossingWithOtherWidgets(activeWidget.id,
+                                                                         pointsForCheck, false);
+  if (crossingWidgets.length === 0 && !crossingChecker.isOutOfBorders(activeWidget)) {
     activeWidget.setPosition(nearest.x, nearest.y);
+  } else {
+    activeWidget.commitMovement(movement);
   }
 }
 
-// function andAgain(stack: IRenderStack, mode: NextMoveMode, movement: Coordinate) {
-//   const activeWidget = stack.activeWidget;
-//   const points2 = activeWidget.getPoints2();
-//   const result = [];
-//   stack.getOnlySticky()
-//         .filter(widget => !widget.isActive)
-//         .forEach((widget) => {
-//           points2.forEach((point: Coordinate, activePointIndex) => {
-//             widget.getPoints2().forEach((widgetPoint: Coordinate, nearestPointIndex) => { // index ?
-//               const distance = distanceBetweenPoints(point, widgetPoint);
-// // only if distance < stickingLimit (но получаается окружность, углы не учитываются)
-//               if (distance < stickyLimit) {
-//                 result.push({
-//                   widgetPoint,
-//                   activePointIndex,
-//                   nearestPointIndex,
-//                   distance: distanceBetweenPoints(point, widgetPoint),
-//                 });
-//               }
-//             });
-//           });
+function detectDirection(movement: Coordinate) {
+  const direction: IDirection = {
+    horizontal: movement.x > 0 ? 'right' : 'left',
+    vertical: movement.y > 0 ? 'bottom' : 'top',
+  };
+  if (movement.x === 0) {
+    direction.horizontal = 'zero';
+  }
+  if (movement.y === 0) {
+    direction.vertical = 'zero';
+  }
+  return direction;
+}
 
-// // найти ближайшую у предыдущего
-// // найти ближайшую у текущего
-// // запомнить координату для активного, если это окажется лучшим вариантом ??
-// // вернуть что ближе к активному
-//         });
-//   const nearestPoint = result.sort((a, b) => a.distance - b.distance)[0];
-//   console.log(result.sort((a, b) => a.distance - b.distance));
-//   nearestPoint.activePoint = getPointForActiveMove(activeWidget, nearestPoint);
-//   // console.error(result.sort((a, b) => a.distance - b.distance)[0]);
-//   return nearestPoint;
-// }
+function pointsByDirection(direction: IDirection, point: Coordinate, activePoint: Coordinate) {
+  const res = [];
+  if (direction.horizontal === 'right') {
+    res.push(activePoint.x < point.x);
+  } else if (direction.horizontal === 'left') {
+    res.push(activePoint.x > point.x);
+  } else {
+    res.push(true);
+  }
+  if (direction.vertical === 'top') {
+    res.push(activePoint.y > point.y);
+  } else if (direction.vertical === 'bottom') {
+    res.push(activePoint.y < point.y);
+  } else {
+    res.push(true);
+  }
+  return res.every(bool => bool);
+}
 
+function distanceBetweenPoints(firstPoint: Coordinate, secondPoint: Coordinate) {
+  return Math.sqrt((secondPoint.x - firstPoint.x) ** 2 + (secondPoint.y - firstPoint.y) ** 2);
+}
 
-// function distanceBetweenPoints(firstPoint: Coordinate, secondPoint: Coordinate) {
-//   return Math.sqrt((secondPoint.x - firstPoint.x) ** 2 + (secondPoint.y - firstPoint.y) ** 2);
-// }
+function getPointForActiveMove(activeWidget: IWidget, nearestPoint) { // add types
+  const widgetPoint: Coordinate = nearestPoint.widgetPoint;
+  const activePointIndex = nearestPoint.activePointIndex;
+  const nearestPointIndex = nearestPoint.nearestPointIndex;
+  let x: number = widgetPoint.x;
+  let y: number = widgetPoint.y;
 
-// function getPointForActiveMove(activeWidget: IWidget, nearestPoint) { // add types
-//   let x: number;
-//   let y: number;
-//   const widgetPoint: Coordinate = nearestPoint.widgetPoint;
-//   const activePointIndex = nearestPoint.activePointIndex;
-//   const nearestPointIndex = nearestPoint.nearestPointIndex;
+  if (activePointIndex === 0 && nearestPointIndex !== 3) {
+    x += 1;
+  }
+  if (activePointIndex === 0 && nearestPointIndex !== 1) {
+    y += 1;
+  }
+  if (activePointIndex === 1) {
+    x -= activeWidget.width;
+    if (nearestPointIndex !== 2) {
+      x -= 1;
+    }
+    if (nearestPointIndex !== 0) {
+      y += 1;
+    }
+  }
+  if (activePointIndex === 2) {
+    x -= activeWidget.width;
+    y -= activeWidget.height;
+    if (nearestPointIndex !== 1) {
+      x -= 1;
+    }
+    if (nearestPointIndex !== 3) {
+      y -= 1;
+    }
+  }
+  if (activePointIndex === 3) {
+    y -= activeWidget.height;
+    if (nearestPointIndex !== 0) {
+      x += 1;
+    }
+    if (nearestPointIndex !== 2) {
+      y -= 1;
+    }
+  }
 
-//   switch (activePointIndex) {
-//     case 0:
-//       if (nearestPointIndex === 1) {
-//         console.log('0-1');
-//         x = widgetPoint.x;
-//         y = widgetPoint.y + 1;
-//       } else if (nearestPointIndex === 2) {
-//         console.log('0-2');
-//         x = widgetPoint.x + 1;
-//         y = widgetPoint.y;
-//       } else if (nearestPointIndex === 3) {
-//         console.log('0-3');
-//         x = widgetPoint.x + 1;
-//         y = widgetPoint.y + 1;
-//       }
-//       break;
-//     case 1:
-//       if (nearestPointIndex === 0) {
-//         console.log('1-0');
-//         x = widgetPoint.x;
-//         y = widgetPoint.y - activeWidget.height - 1;
-//       } else if (nearestPointIndex === 2) {
-//         console.log('1-2');
-//         x = widgetPoint.x + 1;
-//         y = widgetPoint.y - activeWidget.height - 1;
-//       } else if (nearestPointIndex === 3) {
-//         console.log('1-3');
-//         x = widgetPoint.x  - activeWidget.width - 1;
-//         y = widgetPoint.y + 1;
-//       }
-//       break;
-//     case 2:
-//       if (nearestPointIndex === 0) {
-//         console.log('2-0');
-//         x = widgetPoint.x - activeWidget.width - 1;
-//         y = widgetPoint.y;
-//       } else if (nearestPointIndex === 1) {
-//         console.log('2-1');
-//         x = widgetPoint.x - activeWidget.width - 1;
-//         y = widgetPoint.y + 1;
-//       } else if (nearestPointIndex === 3) {
-//         console.log('2-3');
-//         x = widgetPoint.x - activeWidget.width - 1;
-//         y = widgetPoint.y - activeWidget.height;
-//       }
-//       break;
-//     case 3:
-//       if (nearestPointIndex === 0) {
-//         console.log('3-0');
-//         x = widgetPoint.x - activeWidget.width - 1;
-//         y = widgetPoint.y - activeWidget.height - 1;
-//       } else if (nearestPointIndex === 1) {
-//         console.log('3-1');
-//         x = widgetPoint.x + 1;
-//         y = widgetPoint.y - activeWidget.height - 1;
-//       } else if (nearestPointIndex === 2) {
-//         console.log('3-2');
-//         x = widgetPoint.x + 1;
-//         y = widgetPoint.y - activeWidget.height;
-//       }
-//       break;
-//   }
-
-//   return { x, y };
-  // }
-// }
+  return { x, y };
+}
