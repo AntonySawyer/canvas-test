@@ -14,12 +14,10 @@ export default class WidgetSample extends React.Component<WidgetSampleProps, {}>
   }
 
   render() {
-    const { id, width, height, sticky, repulsive } = this.props.sample;
-    let className = 'widgetSample';
-    className += sticky ? ' stickyWidget' : '';
-    className += repulsive ? ' repulsiveWidget' : '';
+    const { id, type, width, height, sticky, repulsive } = this.props.sample;
+    const sampleClassName = `widgetSample ${sticky ? ' stickyWidget' : ''} ${repulsive ? ' repulsiveWidget' : ''}`;
     return (
-        <div className={className}
+        <div className={sampleClassName}
           data-id={id}
           data-sticky={sticky}
           data-repulsive={repulsive}

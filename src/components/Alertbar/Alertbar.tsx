@@ -19,7 +19,6 @@ export default class Alertbar extends React.Component<AlertbarProps, AlertbarSta
     this.state = {
       activeAlertId: null,
     };
-    this.changeActiveAlert = this.changeActiveAlert.bind(this);
     subscriber.subscribe(WidgetEvents.ChangeActiveStatus, () => this.changeActiveAlert(null));
   }
 
@@ -38,7 +37,7 @@ export default class Alertbar extends React.Component<AlertbarProps, AlertbarSta
             return <Alert key={pairKey} widgetId={pair[0]}
                           isActiveAlert={isActiveAlert}
                           targetId={pair[1]}
-                          changeActiveAlert={this.changeActiveAlert}
+                          changeActiveAlert={id => this.changeActiveAlert(id)}
                           setHighlightBordersByIds={this.props.setHighlightBordersByIds} />;
           })}
         </ul>

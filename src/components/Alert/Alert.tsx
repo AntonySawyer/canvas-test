@@ -12,7 +12,6 @@ interface AlertProps {
 export default class Alert extends React.Component<AlertProps, {}> {
   constructor(props) {
     super(props);
-    this.handleClick = this.handleClick.bind(this);
   }
 
   handleClick() {
@@ -23,13 +22,12 @@ export default class Alert extends React.Component<AlertProps, {}> {
 
   render() {
     const { widgetId, targetId, isActiveAlert } = this.props;
-    let className = 'alert';
-    if (isActiveAlert) {
-      className += ' active';
-    }
+    const alertClassName = `alert ${isActiveAlert ? 'active' : ''}`;
     return (
-      <li className={className}
-          onClick={this.handleClick}>Widget #{widgetId} is crossing with widget #{targetId}!</li>
+      <li className={alertClassName}
+          onClick={() => this.handleClick()}>
+            Widget #{widgetId} is crossing with widget #{targetId}!
+      </li>
     );
   }
 }

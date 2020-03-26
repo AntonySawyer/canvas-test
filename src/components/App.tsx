@@ -24,13 +24,9 @@ export class App extends React.Component<AppProps, AppState> {
       widgetCount: 0,
       crossingList: [],
     };
-    this.updateWidgetCounter = this.updateWidgetCounter.bind(this);
-    this.updateAlertWidgets = this.updateAlertWidgets.bind(this);
-    this.saveStack = this.saveStack.bind(this);
-    this.loadStack = this.loadStack.bind(this);
-    subscriber.subscribe(CanvasEvents.StaticLayerCleared, this.updateWidgetCounter);
-    subscriber.subscribe(StackEvents.ActiveWidgetRemoved, this.updateWidgetCounter);
-    subscriber.subscribe(WidgetEvents.ChangeCrossingPair, this.updateAlertWidgets);
+    subscriber.subscribe(CanvasEvents.StaticLayerCleared, () => this.updateWidgetCounter());
+    subscriber.subscribe(StackEvents.ActiveWidgetRemoved, () => this.updateWidgetCounter());
+    subscriber.subscribe(WidgetEvents.ChangeCrossingPair, () => this.updateAlertWidgets());
   }
 
   saveStack(name: string) {
@@ -58,8 +54,8 @@ export class App extends React.Component<AppProps, AppState> {
     return (
       <>
         <Header widgetCount={this.state.widgetCount}
-                saveStack={this.saveStack}
-                loadStack={this.loadStack} />
+                saveStack={name => this.saveStack(name)}
+                loadStack={name => this.loadStack(name)} />
         <section className="wrapper">
           <Sidebar widgetSamples={widgetSamples}
             handleClickOnWidgetSample={this.props.handleClickOnWidgetSample} />
