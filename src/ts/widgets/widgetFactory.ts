@@ -48,8 +48,5 @@ function getColor(isSticky: boolean, isRepulsive: boolean) {
   if (isSticky) {
     return WidgetColor.sticky;
   }
-  if (isRepulsive) {
-    return WidgetColor.repulsive;
-  }
-  return WidgetColor.default;
+  return isRepulsive ? WidgetColor.repulsive : WidgetColor.default;
 }

@@ -1,4 +1,4 @@
-import { IWidgetSampleGroups } from "./interfaces";
+import { IWidgetSampleGroups } from './interfaces';
 
 export const stickyLimit = 50;
 export const repulsiveLimit = 100;

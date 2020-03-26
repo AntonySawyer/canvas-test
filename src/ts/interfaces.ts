@@ -11,6 +11,11 @@ export type Points = { first: Coordinate, last: Coordinate };
 
 export type SinteticEvents = (WidgetEvents | StackEvents | CanvasEvents);
 
+export interface IDirection {
+  vertical: ('top' | 'bottom' | 'zero');
+  horizontal: ('right' | 'left' | 'zero');
+}
+
 export interface ISubscriber {
   subscribe: (trigger: SinteticEvents, callback: () => void) => void;
   unsubscribe: (trigger: SinteticEvents, callback: () => void) => void;
