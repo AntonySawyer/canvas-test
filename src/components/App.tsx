@@ -38,6 +38,7 @@ export class App extends React.Component<AppProps, AppState> {
     const serializedStack = localStorage.getItem(name);
     const stackParams = deserializeStack(serializedStack);
     this.props.stack.initStackFromStorage(stackParams);
+    this.updateAlertWidgets();
   }
 
   updateWidgetCounter() {

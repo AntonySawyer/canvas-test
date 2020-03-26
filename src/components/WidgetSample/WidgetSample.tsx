@@ -14,13 +14,10 @@ export default class WidgetSample extends React.Component<WidgetSampleProps, {}>
   }
 
   render() {
-    const { id, type, width, height, sticky, repulsive } = this.props.sample;
-    const sampleClassName = `widgetSample ${sticky ? ' stickyWidget' : ''} ${repulsive ? ' repulsiveWidget' : ''}`;
+    const { id, width, height } = this.props.sample;
     return (
-        <div className={sampleClassName}
+        <div className="widgetSample"
           data-id={id}
-          data-sticky={sticky}
-          data-repulsive={repulsive}
           onMouseDown={e => this.handleMouseDown(e)}>
           <span className="widgetSampleDescr">{width}0x{height}0mm</span>
           <span className="widgetSampleIcon">☰</span>

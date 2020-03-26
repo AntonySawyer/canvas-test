@@ -1,5 +1,5 @@
 import RectWidget from './RectWidget';
-import { IWidget, Size, WidgetTypes, IWidgetParams } from '../interfaces';
+import { IWidget, Size, WidgetTypes, IWidgetParams, IWidgetSample } from '../interfaces';
 import { WidgetColor, widgetSamples, WidgetCategories } from '../constants';
 import { convertXForStaticLayer } from '../helpers/coordinate';
 
@@ -23,28 +23,30 @@ export function collectParamsFromEvent(stack: IWidget[], e: MouseEvent) {
           }).id + 1;
   const dataset = (e.target as HTMLElement).dataset;
 
-  const isSticky = dataset.sticky === 'true';
-  const isRepulsive = dataset.repulsive === 'true';
-  const color = isSticky ? WidgetColor.sticky : WidgetColor.nonSticky;
-  const coordinate = { x: convertXForStaticLayer(e.pageX), y: e.pageY };
+  let category: WidgetCategories;
+  let targetSample: IWidgetSample;
 
-  const widgetCategory: WidgetCategories = getCategory(isSticky, isRepulsive);
+  for (const sampleCategory in widgetSamples) {
+    if (widgetSamples[sampleCategory].filter(sample => sample.id === dataset.id).length !== 0) {
+      category = sampleCategory as WidgetCategories;
+      targetSample = widgetSamples[sampleCategory].filter(sample => sample.id === dataset.id)[0];
+    }
+  }
 
-  const targetSample = widgetSamples[widgetCategory]
-                  .filter(sample => sample.id === +dataset.id)[0];
-  const { width, height } = targetSample;
+  const isSticky = category === WidgetCategories.sticky;
+  const isRepulsive = category === WidgetCategories.repulsive;
+  const color = getColor(isSticky, isRepulsive);
   const type = targetSample.type as WidgetTypes;
+  const coordinate = { x: convertXForStaticLayer(e.pageX), y: e.pageY };
+  const { width, height } = targetSample;
   const size: Size = { width, height };
 
   return { id, coordinate, size, color, type, isSticky, isRepulsive };
 }
 
-function getCategory(isSticky: boolean, isRepulsive: boolean) {
-  if (isRepulsive) {
-    return WidgetCategories.repulsive;
-  }
+function getColor(isSticky: boolean, isRepulsive: boolean) {
   if (isSticky) {
-    return WidgetCategories.sticky;
+    return WidgetColor.sticky;
   }
-  return WidgetCategories.default;
+  return isRepulsive ? WidgetColor.repulsive : WidgetColor.default;
 }

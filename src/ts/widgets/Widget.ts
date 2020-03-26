@@ -30,6 +30,8 @@ export default abstract class Widget extends AxisPoint implements IWidget {
   abstract draw(): void;
   abstract moveToGeometricCenter(xEvent: number, yEvent: number): void;
   abstract drawBorder(x: number, ctx: CanvasRenderingContext2D): void;
+  abstract getPoints();
+  abstract getPoints2();
 
   setActive = (isActive: boolean) => {
     this.isActive = isActive;
@@ -63,17 +65,6 @@ export default abstract class Widget extends AxisPoint implements IWidget {
 
   setHighlightBorders = (isHighlightBorders: boolean) => {
     this.isHighlightBorders = isHighlightBorders;
-  }
-
-  getPoints() {
-    const first = this.getCoordinate();
-    const last = { x: this.x + this.width, y: this.y + this.height };
-    return { first, last };
-  }
-
-  getPoints2() { // for next sticking implemetation
-    const { first, last } = this.getPoints();
-    return [first, { x: first.x, y: last.y }, { x: last.x, y: first.y }, last];
   }
 
   protected getTargetLayer = () => {

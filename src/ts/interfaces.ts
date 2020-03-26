@@ -11,6 +11,11 @@ export type Points = { first: Coordinate, last: Coordinate };
 
 export type SinteticEvents = (WidgetEvents | StackEvents | CanvasEvents);
 
+export interface IDirection {
+  vertical: ('top' | 'bottom' | 'zero');
+  horizontal: ('right' | 'left' | 'zero');
+}
+
 export interface ISubscriber {
   subscribe: (trigger: SinteticEvents, callback: () => void) => void;
   unsubscribe: (trigger: SinteticEvents, callback: () => void) => void;
@@ -73,7 +78,7 @@ export interface IRenderStack {
 }
 
 export interface ICrossingService {
-  pointsCrossingWithOtherWidgets: (checkedId: number, checkedPoints: Points) => IWidget[];
+  pointsCrossingWithOtherWidgets: (checkedId: number, checkedPoints: Points, checkedWidgetisRepulsive: boolean) => IWidget[];
   isOutOfBorders: (widget: IWidget) => boolean;
 }
 
@@ -93,10 +98,14 @@ export interface IWidgetParams {
 }
 
 export interface IWidgetSample {
-  id: number;
+  id: string;
   type: string;
   width: number;
   height: number;
-  sticky: boolean;
-  repulsive: boolean;
+}
+
+export interface IWidgetSampleGroups {
+  sticky: IWidgetSample[];
+  default: IWidgetSample[];
+  repulsive: IWidgetSample[];
 }
