@@ -55,8 +55,8 @@ export class App extends React.Component<AppProps, AppState> {
     return (
       <>
         <Header widgetCount={this.state.widgetCount}
-                saveStack={this.saveStack}
-                loadStack={this.loadStack} />
+                saveStack={name => this.saveStack(name)}
+                loadStack={name => this.loadStack(name)} />
         <section className="wrapper">
           <Sidebar widgetSamples={widgetSamples}
             handleClickOnWidgetSample={this.props.handleClickOnWidgetSample} />
